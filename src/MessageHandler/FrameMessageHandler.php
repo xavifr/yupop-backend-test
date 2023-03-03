@@ -30,9 +30,12 @@ class FrameMessageHandler
 
     public function __invoke(FrameMessage $message)
     {
+        // get entity
         $frame = $this->frameRepository->find($message->getId());
 
+        // initialize new messages to deliver
         $new_messages = [];
+
         switch ($frame->getState()) {
             case 'new':
                 $new_messages = $this->atNew($frame, $message->getPinsRolled());
@@ -45,9 +48,11 @@ class FrameMessageHandler
                 break;
         }
 
+        // persist entity
         $this->entityManager->persist($frame);
         $this->entityManager->flush();
 
+        // deliver messages
         array_walk($new_messages, fn($x) => $this->bus->dispatch($x));
     }
 

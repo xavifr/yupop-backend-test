@@ -29,9 +29,12 @@ class PlayerMessageHandler
 
     public function __invoke(PlayerMessage $message)
     {
+        // get entity
         $player = $this->playerRepository->find($message->getId());
 
+        // initialize new messages to deliver
         $new_messages = [];
+
         switch ($player->getState()) {
             case 'waiting':
                 $this->atWaiting($player);
@@ -41,9 +44,11 @@ class PlayerMessageHandler
                 break;
         }
 
+        // persist entity
         $this->entityManager->persist($player);
         $this->entityManager->flush();
 
+        // deliver messages
         array_walk($new_messages, fn($x) => $this->bus->dispatch($x));
     }
 

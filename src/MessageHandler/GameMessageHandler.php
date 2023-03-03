@@ -29,8 +29,10 @@ class GameMessageHandler
 
     public function __invoke(GameMessage $message)
     {
+        // get entity
         $game = $this->gameRepository->find($message->getId());
 
+        // initialize new messages to deliver
         $new_messages = [];
         switch ($game->getState()) {
             case 'new':
@@ -44,9 +46,11 @@ class GameMessageHandler
                 break;
         }
 
+        // persist entity
         $this->entityManager->persist($game);
         $this->entityManager->flush();
 
+        // deliver messages
         array_walk($new_messages, fn($x) => $this->bus->dispatch($x));
     }
 
