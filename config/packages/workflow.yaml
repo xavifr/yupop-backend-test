@@ -1,0 +1,88 @@
+framework:
+  workflows:
+    game:
+      type: state_machine
+      audit_trail:
+        enabled: "%kernel.debug%"
+      marking_store:
+        type: 'method'
+        property: 'state'
+      supports:
+        - App\Entity\Game
+      initial_marking: new
+      places:
+        - new
+        - playing
+        - players_finished
+        - finished
+      transitions:
+        start:
+          from: new
+          to: playing
+        end:
+          from: playing
+          to: players_finished
+        check_winner:
+          from: players_finished
+          to: finished
+    player:
+      type: state_machine
+      audit_trail:
+        enabled: "%kernel.debug%"
+      marking_store:
+        type: 'method'
+        property: 'state'
+      supports:
+        - App\Entity\Player
+      initial_marking: waiting
+      places:
+        - waiting
+        - playing
+        - finished
+      transitions:
+        start_frame:
+          from: waiting
+          to: playing
+        end_frame:
+          from: playing
+          to: waiting
+        end_game:
+          from: playing
+          to: finished
+    frame:
+      type: state_machine
+      audit_trail:
+        enabled: "%kernel.debug%"
+      marking_store:
+        type: 'method'
+        property: 'state'
+      supports:
+        - App\Entity\Frame
+      initial_marking: new
+      places:
+        - new
+        - second_roll
+        - wait_score
+        - done
+      transitions:
+        strike:
+          from: new
+          to: wait_score
+        roll_first:
+          from: new
+          to: second_roll
+        spare:
+          from: second_roll
+          to: wait_score
+        roll_second:
+          from: second_roll
+          to: done
+        receive_score_pending:
+          from: wait_score
+          to: wait_score
+        receive_score_done:
+          from: wait_score
+          to: done
+        roll_bonus:
+          from: new
+          to: done
