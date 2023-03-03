@@ -77,12 +77,10 @@ framework:
         roll_second:
           from: second_roll
           to: done
-        receive_score_pending:
-          from: wait_score
-          to: wait_score
         receive_score_done:
           from: wait_score
           to: done
         roll_bonus:
           from: new
           to: done
+

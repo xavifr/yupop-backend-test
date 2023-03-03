@@ -69,9 +69,22 @@ class PlayerMessageHandler
      */
     private function atPlaying(Player $player, int $next_round): iterable
     {
+        // set player final score
+        $final_score = 0;
+        $done_frames = $player->getFrames()->filter(function (Frame $frame) {
+            return $frame->getState() == 'done';
+        });
+        foreach ($done_frames as $frame) {
+            $final_score += $frame->getScore();
+        }
+
+        $player->setFinalScore($final_score);
+
+
         if ($next_round == 0) {
             // end game for this player
             $this->playerStateMachine->apply($player, 'end_game');
+
             yield new GameMessage($player->getGame()->getId());
         } else {
             // create a new frame for next round

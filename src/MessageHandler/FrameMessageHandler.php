@@ -37,11 +37,11 @@ class FrameMessageHandler
             case 'new':
                 $new_messages = $this->atNew($frame, $message->getPinsRolled());
                 break;
-            case 'second_stage':
-                $new_messages = $this->atSecondStage($frame, $message->getPinsRolled());
+            case 'second_roll':
+                $new_messages = $this->atSecondRoll($frame, $message->getPinsRolled());
                 break;
-            case 'wait':
-                $this->atWait($frame, $message->getPinsRolled());
+            case 'wait_score':
+                $this->atWaitScore($frame, $message->getPinsRolled());
                 break;
         }
 
@@ -69,30 +69,39 @@ class FrameMessageHandler
         // if round is FRAMES_PER_GAME+1, player is throwing the bonus ball
         if ($frame->getRound() == Game::FRAMES_PER_GAME + 1) {
             // after ball is thrown, frame is done
-            $this->frameStateMachine->apply($frame, 'done');
+            $this->frameStateMachine->apply($frame, 'roll_bonus');
             yield new PlayerMessage($frame->getPlayer()->getId(), 0);
 
         } else if ($pins_rolled == Frame::PINS_PER_FRAME) {
             // player scored strike!
             $this->frameStateMachine->apply($frame, 'strike');
 
-            // will have to wait one/two roll propagations
+            // frame got a bonus for the next one/two rolls
             $frame->setScoreWait(match ($frame->getRound()) {
                 Game::FRAMES_PER_GAME => 1,
                 default => 2
             });
 
+            // create next player round
             yield new PlayerMessage($frame->getPlayer()->getId(), $frame->getRound() + 1);
 
         } else {
             // wait for second roll
-            $this->frameStateMachine->apply($frame, 'second_roll');
+            $this->frameStateMachine->apply($frame, 'roll_first');
         }
 
+        // force roll propagation to pending frames
         yield new FrameRollPropagation($frame->getId(), $pins_rolled);
     }
 
-    private function atSecondStage(Frame $frame, int $pins_rolled): iterable
+    /**
+     * User is rolling the second ball for this frame
+     *
+     * @param Frame $frame
+     * @param int $pins_rolled
+     * @return iterable
+     */
+    private function atSecondRoll(Frame $frame, int $pins_rolled): iterable
     {
         // do not allow more pins than frame's
         assert($frame->getRoll1() + $pins_rolled <= Frame::PINS_PER_FRAME);
@@ -100,47 +109,55 @@ class FrameMessageHandler
         // update roll2
         $frame->setRoll2($pins_rolled);
 
+        // all pins are down
         if ($frame->getRoll1() + $frame->getRoll2() == Frame::PINS_PER_FRAME) {
             // player scored spare!
             $this->frameStateMachine->apply($frame, 'spare');
 
-            // will have to wait one roll propagations
+            // frame got a bonus for the next roll
             $frame->setScoreWait(1);
         } else {
-            // frame is done
-            $this->frameStateMachine->apply($frame, 'done');
+            // not all pins went down, frame is done
+            $this->frameStateMachine->apply($frame, 'roll_second');
         }
+
+        // decide next frame, 0 means end game
         $next_frame = 0;
         if ($frame->getScore() == Frame::PINS_PER_FRAME || $frame->getRound() < Game::FRAMES_PER_GAME) {
-            $next_frame = $frame->getRound()+1;
+            // create new frame if got spare or game not finished
+            $next_frame = $frame->getRound() + 1;
         }
+
+        // propagate score to other frames
+        yield new FrameRollPropagation($frame->getId(), $pins_rolled);
 
         // generate new frame or end of game
         yield new PlayerMessage($frame->getPlayer()->getId(), $next_frame);
-
-        // 
-        yield new FrameRollPropagation($frame->getId(), $pins_rolled);
-
-        $this->entityManager->flush();
-
-        if ($frame->getState() == 'done') {
-            $this->bus->dispatch(new FrameMessage($frame->getId(), 0));
-        }
     }
 
-
-    private function atWait(Frame $frame, int $pins_rolled): void
+    /**
+     * Frame is waiting the next rolls in order to get the
+     * bonus score after scoring a strike/spare
+     *
+     * @param Frame $frame
+     * @param int $pins_rolled
+     * @return void
+     */
+    private function atWaitScore(Frame $frame, int $pins_rolled): void
     {
         // do not allow more pins than frame's
         assert($pins_rolled <= Frame::PINS_PER_FRAME);
         assert($frame->getScoreWait() > 0);
 
+        // append the pins rolled to the current frame
         $frame->setScore($frame->getScore() + $pins_rolled);
+
+        // decrement wait rolls
         $frame->setScoreWait($frame->getScoreWait() - 1);
 
+        // if pending wait rolls is zero, transition to done
         if ($frame->getScoreWait() == 0) {
-            $this->frameStateMachine->apply($frame, 'done');
+            $this->frameStateMachine->apply($frame, 'receive_score_done');
         }
     }
-
 }
