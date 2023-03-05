@@ -7,11 +7,13 @@ use App\Message\FrameMessage;
 use App\Message\FrameRollPropagation;
 use App\Repository\FrameRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
-final class FrameRollPropagationHandler implements MessageHandlerInterface
+#[AsMessageHandler]
+class FrameRollPropagationHandler
 {
     public function __construct(
         private FrameRepository        $frameRepository,

@@ -12,7 +12,6 @@ use App\Repository\FrameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -61,10 +60,12 @@ class FrameMessageHandler
      *
      * @param Frame $frame
      * @param int $pins_rolled
-     * @return iterable
+     * @return array
      */
-    private function atNew(Frame $frame, int $pins_rolled): iterable
+    private function atNew(Frame $frame, int $pins_rolled): array
     {
+        $out_messages = [];
+
         // do not allow more pins than frame's
         assert($pins_rolled <= Frame::PINS_PER_FRAME);
 
@@ -75,7 +76,7 @@ class FrameMessageHandler
         if ($frame->getRound() == Game::FRAMES_PER_GAME + 1) {
             // after ball is thrown, frame is done
             $this->frameStateMachine->apply($frame, 'roll_bonus');
-            yield new PlayerMessage($frame->getPlayer()->getId(), 0);
+            $out_messages[] = new PlayerMessage($frame->getPlayer()->getId(), 0);
 
         } else if ($pins_rolled == Frame::PINS_PER_FRAME) {
             // player scored strike!
@@ -88,7 +89,7 @@ class FrameMessageHandler
             });
 
             // create next player round
-            yield new PlayerMessage($frame->getPlayer()->getId(), $frame->getRound() + 1);
+            $out_messages[] = new PlayerMessage($frame->getPlayer()->getId(), $frame->getRound() + 1);
 
         } else {
             // wait for second roll
@@ -96,7 +97,9 @@ class FrameMessageHandler
         }
 
         // force roll propagation to pending frames
-        yield new FrameRollPropagation($frame->getId(), $pins_rolled);
+        $out_messages[] = new FrameRollPropagation($frame->getId(), $pins_rolled);
+
+        return $out_messages;
     }
 
     /**
@@ -104,10 +107,12 @@ class FrameMessageHandler
      *
      * @param Frame $frame
      * @param int $pins_rolled
-     * @return iterable
+     * @return array
      */
-    private function atSecondRoll(Frame $frame, int $pins_rolled): iterable
+    private function atSecondRoll(Frame $frame, int $pins_rolled): array
     {
+        $out_messages = [];
+
         // do not allow more pins than frame's
         assert($frame->getRoll1() + $pins_rolled <= Frame::PINS_PER_FRAME);
 
@@ -134,10 +139,12 @@ class FrameMessageHandler
         }
 
         // propagate score to other frames
-        yield new FrameRollPropagation($frame->getId(), $pins_rolled);
+        $out_messages[] = new FrameRollPropagation($frame->getId(), $pins_rolled);
 
         // generate new frame or end of game
-        yield new PlayerMessage($frame->getPlayer()->getId(), $next_frame);
+        $out_messages[] = new PlayerMessage($frame->getPlayer()->getId(), $next_frame);
+
+        return $out_messages;
     }
 
     /**

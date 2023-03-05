@@ -6,6 +6,7 @@ use App\Repository\GameRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -14,6 +15,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\HasLifecycleCallbacks]
 class Game
 {
+
     public const FRAMES_PER_GAME = 10;
 
     #[ORM\Id]
@@ -26,7 +28,6 @@ class Game
     private ?string $name = null;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
-    #[Assert\NotBlank]
     private ?string $reference = null;
 
     #[ORM\OneToMany(mappedBy: 'game', targetEntity: Player::class, orphanRemoval: true)]
@@ -115,8 +116,9 @@ class Game
     }
 
     #[ORM\PrePersist]
-    public function setReferenceValue()
+    public function setReferenceValue(): void
     {
+        error_log("PREPER");
         $this->reference = bin2hex(random_bytes(16));
     }
 

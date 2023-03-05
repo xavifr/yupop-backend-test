@@ -11,7 +11,6 @@ use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
 
@@ -32,6 +31,8 @@ class PlayerMessageHandler
         // get entity
         $player = $this->playerRepository->find($message->getId());
 
+        $this->logger->error(sprintf("Received message for player %s in state '%s'", $player->getName(), $player->getState()));
+        
         // initialize new messages to deliver
         $new_messages = [];
 
@@ -70,10 +71,12 @@ class PlayerMessageHandler
      *
      * @param Player $player
      * @param int $next_round
-     * @return iterable
+     * @return array
      */
-    private function atPlaying(Player $player, int $next_round): iterable
+    private function atPlaying(Player $player, int $next_round): array
     {
+        $out_messages = [];
+
         // set player final score
         $final_score = 0;
         $done_frames = $player->getFrames()->filter(function (Frame $frame) {
@@ -90,7 +93,7 @@ class PlayerMessageHandler
             // end game for this player
             $this->playerStateMachine->apply($player, 'end_game');
 
-            yield new GameMessage($player->getGame()->getId());
+            $out_messages[] = new GameMessage($player->getGame()->getId());
         } else {
             // create a new frame for next round
             $new_frame = new Frame();
@@ -105,8 +108,10 @@ class PlayerMessageHandler
                 $this->playerStateMachine->apply($player, 'end_frame');
 
                 // force a new player election
-                yield new GameMessage($player->getGame()->getId());
+                $out_messages[] = new GameMessage($player->getGame()->getId());
             }
         }
+
+        return $out_messages;
     }
 }

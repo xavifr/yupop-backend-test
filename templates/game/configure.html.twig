@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Let's add players to the game!{% endblock %}
+
+{% block body %}
+
+    {% for player in game.players %}
+        <h4>{{ player.name }}</h4>
+    {% endfor %}
+
+    <div class="example-wrapper">
+    {{ form(game_form) }}
+</div>
+{% endblock %}
+

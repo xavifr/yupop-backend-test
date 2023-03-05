@@ -148,7 +148,7 @@ class Player
     #[ORM\PrePersist]
     public function setPositionValue()
     {
-        $this->position = $this->getGame()->getPlayers()->count()+1;
+        $this->position = $this->getGame()->getPlayers()->count();
     }
 
     public function getLastRound(): ?int
