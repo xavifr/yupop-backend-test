@@ -25,4 +25,4 @@ framework:
             App\Message\FrameMessage: async
             App\Message\GameMessage: async
             App\Message\PlayerMessage: async
-            App\Message\FrameRollPropagation: async
+            App\Message\FrameRollPropagationMessage: async

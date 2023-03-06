@@ -2,7 +2,7 @@
 
 namespace App\Message;
 
-final class GameMessage
+class GameMessage
 {
     public function __construct(
         private int $id,

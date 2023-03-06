@@ -51,7 +51,8 @@ class GameMessageHandler
                 $this->logger->error("unknown state");
         }
 
-        $this->logger->error(" New state is " . $game->getState());
+        $this->logger->error(" GAME: New state is " . $game->getState());
+
         // persist entity
         $this->entityManager->persist($game);
         $this->entityManager->flush();
@@ -70,7 +71,6 @@ class GameMessageHandler
     {
         // start game
         $this->gameStateMachine->apply($game, 'start');
-        $this->logger->error("  New state is " . $game->getState());
 
         // dispatch new game message, to select first player
         return [new GameMessage($game->getId())];
@@ -96,17 +96,19 @@ class GameMessageHandler
         if (count($players) > 0) {
             // order players based on last played round and position on game
             usort($players, function (Player $a, Player $b) {
+                $this->logger->error(sprintf("  cmp %s with %s", $a->getName(), $b->getName()));
+                $this->logger->error(sprintf("    A GLT: %d, POS: %d", $a->getLastRound(), $a->getPosition()));
+                $this->logger->error(sprintf("    B GLT: %d, POS: %d", $b->getLastRound(), $b->getPosition()));
+
                 if ($a->getLastRound() == $b->getLastRound()) {
                     return $a->getPosition() - $b->getPosition();
-                } else {
-                    return $a->getLastRound() - $b->getLastRound();
                 }
+
+                return $a->getLastRound() - $b->getLastRound();
             });
 
-            $this->logger->error(sprintf("  players, sorted by position, are: %s", print_r($players, true)));
-
             // If there are players waiting
-            $this->logger->error(sprintf("  selected player %s", $players[0]->getName()));
+            $this->logger->error(sprintf("  selected player: %s", $players[0]->getName()));
 
             // throw that player to the court!
             $out_messages[] = new PlayerMessage($players[0]->getId());
@@ -115,6 +117,8 @@ class GameMessageHandler
 
             // end game
             $this->gameStateMachine->apply($game, 'end');
+            $out_messages[] = new GameMessage($game->getId());
+
         }
 
         $this->logger->error("  New state is " . $game->getState());

@@ -2,7 +2,7 @@
 
 namespace App\Message;
 
-final class PlayerMessage
+class PlayerMessage
 {
 
     public function __construct(

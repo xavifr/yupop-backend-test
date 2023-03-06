@@ -2,7 +2,7 @@
 
 namespace App\Message;
 
-final class FrameRollPropagation
+class FrameRollPropagationMessage
 {
     public function __construct(
         private int $id,
@@ -16,7 +16,7 @@ final class FrameRollPropagation
         return $this->id;
     }
 
-    public function getPinsRolled(): array
+    public function getPinsRolled(): int
     {
         return $this->pins_rolled;
     }

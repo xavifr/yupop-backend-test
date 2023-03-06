@@ -22,6 +22,7 @@ class PlayerMessageHandler
         private PlayerRepository       $playerRepository,
         private WorkflowInterface      $playerStateMachine,
         private MessageBusInterface    $bus,
+        private ?LoggerInterface $logger,
     )
     {
     }
@@ -32,7 +33,7 @@ class PlayerMessageHandler
         $player = $this->playerRepository->find($message->getId());
 
         $this->logger->error(sprintf("Received message for player %s in state '%s'", $player->getName(), $player->getState()));
-        
+
         // initialize new messages to deliver
         $new_messages = [];
 
@@ -44,6 +45,9 @@ class PlayerMessageHandler
                 $new_messages = $this->atPlaying($player, $message->getNextRound());
                 break;
         }
+
+        $this->logger->error(sprintf(" PLAYER: New state is %s" , $player->getState()));
+
 
         // persist entity
         $this->entityManager->persist($player);
@@ -61,6 +65,16 @@ class PlayerMessageHandler
      */
     private function atWaiting(Player $player): void
     {
+        if (count($player->getFrames()) == 0) {
+            $this->logger->error(" PLAYER creating the first frame");
+
+            $new_frame = new Frame();
+            $new_frame->setPlayer($player);
+            $new_frame->setRound(1);
+            $player->addFrame($new_frame);
+            $this->entityManager->persist($new_frame);
+        }
+
         // start_frame to transition to playing
         $this->playerStateMachine->apply($player, 'start_frame');
     }
@@ -77,7 +91,10 @@ class PlayerMessageHandler
     {
         $out_messages = [];
 
-        // set player final score
+        $this->logger->error(" PLAYER finished his turn");
+
+
+        // calc player final score
         $final_score = 0;
         $done_frames = $player->getFrames()->filter(function (Frame $frame) {
             return $frame->getState() == 'done';
@@ -86,15 +103,22 @@ class PlayerMessageHandler
             $final_score += $frame->getScore();
         }
 
+        $this->logger->error(sprintf(" PLAYER: updated score to %d", $final_score));
         $player->setFinalScore($final_score);
+        $player->setLastRound($player->getFrames()->last()->getRound());
 
 
         if ($next_round == 0) {
+            $this->logger->error(sprintf(" PLAYER: this was the last round, end game"));
+
             // end game for this player
             $this->playerStateMachine->apply($player, 'end_game');
 
             $out_messages[] = new GameMessage($player->getGame()->getId());
         } else {
+
+            $this->logger->error(sprintf(" PLAYER: creating new frame %d", $next_round));
+
             // create a new frame for next round
             $new_frame = new Frame();
             $new_frame->setPlayer($player);
