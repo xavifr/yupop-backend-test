@@ -62,25 +62,32 @@ framework:
       places:
         - new
         - second_roll
+        - third_roll
         - wait_score
         - done
       transitions:
         strike:
           from: new
           to: wait_score
+        strike_bonus:
+          from: new
+          to: third_roll
         roll_first:
           from: new
           to: second_roll
         spare:
           from: second_roll
           to: wait_score
+        spare_bonus:
+          from: second_roll
+          to: third_roll
         roll_second:
           from: second_roll
           to: done
+        roll_third:
+          from: third_roll
+          to: done
         receive_score_done:
           from: wait_score
-          to: done
-        roll_bonus:
-          from: new
           to: done
 

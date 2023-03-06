@@ -23,7 +23,7 @@ class FrameMessageHandler
         private FrameRepository        $frameRepository,
         private WorkflowInterface      $frameStateMachine,
         private MessageBusInterface    $bus,
-        private ?LoggerInterface $logger,
+        private ?LoggerInterface       $logger,
     )
     {
     }
@@ -44,6 +44,9 @@ class FrameMessageHandler
                 break;
             case 'second_roll':
                 $new_messages = $this->atSecondRoll($frame, $message->getPinsRolled());
+                break;
+            case 'third_roll':
+                $new_messages = $this->atThirdRoll($frame, $message->getPinsRolled());
                 break;
             case 'wait_score':
                 $this->atWaitScore($frame, $message->getPinsRolled());
@@ -71,35 +74,24 @@ class FrameMessageHandler
     {
         $out_messages = [];
 
-        // do not allow more pins than frame's
-        assert($pins_rolled <= Frame::PINS_PER_FRAME);
-
         // update roll1
         $frame->setRoll1($pins_rolled);
 
-        // if round is FRAMES_PER_GAME+1, player is throwing the bonus ball
-        if ($frame->getRound() == Game::FRAMES_PER_GAME + 1) {
-            $this->logger->error(sprintf("  thrown %d pins at bonus frame!", $pins_rolled));
-
-            // after ball is thrown, frame is done
-            $this->frameStateMachine->apply($frame, 'roll_bonus');
-            $out_messages[] = new PlayerMessage($frame->getPlayer()->getId(), 0);
-
-        } else if ($pins_rolled == Frame::PINS_PER_FRAME) {
+        if ($pins_rolled == Frame::PINS_PER_FRAME) {
+            // player scored strike!
             $this->logger->error(sprintf("  strike!"));
 
-            // player scored strike!
-            $this->frameStateMachine->apply($frame, 'strike');
+            if ($frame->getRound() == Game::FRAMES_PER_GAME) {
+                // at last round, allow a bonus roll!
+                $this->frameStateMachine->apply($frame, 'strike_bonus');
+            } else {
+                // frame got a bonus for the next two rolls
+                $this->frameStateMachine->apply($frame, 'strike');
+                $frame->setScoreWait(2);
 
-            // frame got a bonus for the next one/two rolls
-            $frame->setScoreWait(match ($frame->getRound()) {
-                Game::FRAMES_PER_GAME => 1,
-                default => 2
-            });
-
-            // create next player round
-            $out_messages[] = new PlayerMessage($frame->getPlayer()->getId(), $frame->getRound() + 1);
-
+                // create next player round
+                $out_messages[] = new PlayerMessage($frame->getPlayer()->getId(), $frame->getRound() + 1);
+            }
         } else {
             $this->logger->error(sprintf("  rolled %d pins at first roll", $pins_rolled));
 
@@ -124,20 +116,23 @@ class FrameMessageHandler
     {
         $out_messages = [];
 
-        // do not allow more pins than frame's
-        assert($frame->getRoll1() + $pins_rolled <= Frame::PINS_PER_FRAME);
-
         // update roll2
         $frame->setRoll2($pins_rolled);
 
         // all pins are down
         if ($frame->getRoll1() + $frame->getRoll2() == Frame::PINS_PER_FRAME) {
-            $this->logger->error(sprintf("  spare!"));
             // player scored spare!
-            $this->frameStateMachine->apply($frame, 'spare');
+            $this->logger->error(sprintf("  spare!"));
 
-            // frame got a bonus for the next roll
-            $frame->setScoreWait(1);
+            if ($frame->getRound() == Game::FRAMES_PER_GAME) {
+                $this->frameStateMachine->apply($frame, 'spare_bonus');
+            } else {
+                $this->frameStateMachine->apply($frame, 'spare');
+
+                // frame got a bonus for the next roll
+                $frame->setScoreWait(1);
+
+            }
         } else {
             $this->logger->error(sprintf("  rolled %d pins at second roll", $pins_rolled));
 
@@ -145,20 +140,43 @@ class FrameMessageHandler
             $this->frameStateMachine->apply($frame, 'roll_second');
         }
 
-        // decide next frame, 0 means end game
-        $next_frame = 0;
-        if ($frame->getScore() == Frame::PINS_PER_FRAME || $frame->getRound() < Game::FRAMES_PER_GAME) {
-            // create new frame if got spare or game not finished
-            $next_frame = $frame->getRound() + 1;
+        if ($frame->getState() != "third_roll") {
+            // generate new frame or end of game
+            $out_messages[] = new PlayerMessage($frame->getPlayer()->getId(), match ($frame->getRound()) {
+                Game::FRAMES_PER_GAME => 0,
+                default => $frame->getRound() + 1
+            });
         }
-
-        $this->logger->error(sprintf("  next frame will be %d", $next_frame));
 
         // propagate score to other frames
         $out_messages[] = new FrameRollPropagationMessage($frame->getId(), $pins_rolled);
 
-        // generate new frame or end of game
-        $out_messages[] = new PlayerMessage($frame->getPlayer()->getId(), $next_frame);
+
+        return $out_messages;
+    }
+
+    /**
+     * User is rolling the third ball for this frame
+     *
+     * @param Frame $frame
+     * @param int $pins_rolled
+     * @return array
+     */
+    private function atThirdRoll(Frame $frame, int $pins_rolled): array
+    {
+        $out_messages = [];
+
+        // update roll3
+        $frame->setRoll3($pins_rolled);
+
+        // frame is done
+        $this->frameStateMachine->apply($frame, 'roll_third');
+
+        // propagate score to other frames
+        $out_messages[] = new FrameRollPropagationMessage($frame->getId(), $pins_rolled);
+
+        // generate end of game
+        $out_messages[] = new PlayerMessage($frame->getPlayer()->getId(), 0);
 
         return $out_messages;
     }
@@ -173,9 +191,6 @@ class FrameMessageHandler
      */
     private function atWaitScore(Frame $frame, int $pins_rolled): void
     {
-        // do not allow more pins than frame's
-        assert($pins_rolled <= Frame::PINS_PER_FRAME);
-        assert($frame->getScoreWait() > 0);
 
         $this->logger->error(sprintf("  received a propagation score of %d", $pins_rolled));
 

@@ -69,7 +69,7 @@ class PlayerMessageHandler
     {
         if (count($player->getFrames()) == 0) {
             // create first frame
-            $this->logger->error(" PLAYER creating the first frame");
+            $this->logger->error(" PLAYER: creating the first frame");
 
             $new_frame = new Frame();
             $new_frame->setPlayer($player);
@@ -98,8 +98,7 @@ class PlayerMessageHandler
 
         // calc player final score
         $final_score = 0;
-        $done_frames = $player->getFrames();
-        foreach ($done_frames as $frame) {
+        foreach ($player->getFrames() as $frame) {
             $final_score += $frame->getScore();
         }
 

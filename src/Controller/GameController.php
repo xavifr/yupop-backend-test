@@ -96,22 +96,23 @@ class GameController extends AbstractController
             return $player->getState() == 'playing';
         })->first();
 
-        assert($players_playing != null);
+        if (!empty($players_playing)) {
+            // find frame alive
+            $frame_alive = $players_playing->getFrames()->filter(function (Frame $frame) {
+                return $frame->getState() == 'new' || $frame->getState() == 'second_roll' || $frame->getState() == 'third_roll';
+            })->first();
 
-        // find frame alive
-        $frame_alive = $players_playing->getFrames()->filter(function(Frame $frame) {
-           return $frame->getState() == 'new' || $frame->getState() == 'second_roll';
-        })->first();
+            $form = $this->createForm(FrameRollFormType::class, $frame_alive);
+            $form->handleRequest($request);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $rolled_pins = $form['roll']->getData();
+                assert($frame_alive->getScore() + $rolled_pins < Frame::PINS_PER_FRAME);
 
-        assert($frame_alive !== null);
-
-        $form = $this->createForm(FrameRollFormType::class, $frame_alive);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $rolled_pins = $form['roll']->getData();
-            assert($frame_alive->getScore() + $rolled_pins < Frame::PINS_PER_FRAME);
-
-            $this->bus->dispatch(new FrameMessage($frame_alive->getId(), $rolled_pins));
+                $this->bus->dispatch(new FrameMessage($frame_alive->getId(), $rolled_pins));
+            }
+        } else {
+            $form = null;
+            $frame_alive = null;
         }
 
         return $this->render('game/show.html.twig', [

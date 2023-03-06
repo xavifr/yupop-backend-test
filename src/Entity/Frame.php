@@ -36,7 +36,7 @@ class Frame
     private ?int $roll_2 = 0;
 
     #[ORM\Column(options: ['default' => 0])]
-    private ?int $roll_3 = null;
+    private ?int $roll_3 = 0;
 
     #[ORM\Column(options: ['default' => 0])]
     private ?int $score = 0;
