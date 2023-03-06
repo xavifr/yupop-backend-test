@@ -4,12 +4,34 @@
 
 {% block body %}
 
-    {% for player in game.players %}
-        <h4>{{ player.name }}</h4>
-    {% endfor %}
+    <div class="row mt-3">
+        <div class="card col-6">
+            <div class="card-body">
+                <h3 class="card-title">Current players</h3>
 
-    <div class="example-wrapper">
-    {{ form(game_form) }}
-</div>
+                <div class="card-text">
+                    <ul class="list-group">
+                        {% if game.players|length > 0 %}
+                            {% for player in game.players %}
+                                <li class="list-group-item list-group-item-action">{{ player.name }}</li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item" disabled>There are no players yet... Add one!</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card col-6">
+            <div class="card-body">
+                <h3 class="card-title">Add more players</h3>
+
+                <div class="card-text">
+                    {{ form(game_form) }}
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 

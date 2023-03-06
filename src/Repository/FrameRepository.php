@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Frame;
+use App\Entity\Player;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -37,6 +38,11 @@ class FrameRepository extends ServiceEntityRepository
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function findLastFrameForPlayer(Player $player): ?Frame
+    {
+        return $this->findOneBy(['player' => $player], ['round' => 'DESC']);
     }
 
 //    /**

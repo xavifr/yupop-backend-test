@@ -7,6 +7,7 @@ use App\Entity\Game;
 use App\Entity\Player;
 use App\Message\GameMessage;
 use App\Message\PlayerMessage;
+use App\Repository\FrameRepository;
 use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -20,9 +21,10 @@ class PlayerMessageHandler
     public function __construct(
         private EntityManagerInterface $entityManager,
         private PlayerRepository       $playerRepository,
+        private FrameRepository        $frameRepository,
         private WorkflowInterface      $playerStateMachine,
         private MessageBusInterface    $bus,
-        private ?LoggerInterface $logger,
+        private ?LoggerInterface       $logger,
     )
     {
     }
@@ -46,7 +48,7 @@ class PlayerMessageHandler
                 break;
         }
 
-        $this->logger->error(sprintf(" PLAYER: New state is %s" , $player->getState()));
+        $this->logger->error(sprintf(" PLAYER: New state is %s", $player->getState()));
 
 
         // persist entity
@@ -66,6 +68,7 @@ class PlayerMessageHandler
     private function atWaiting(Player $player): void
     {
         if (count($player->getFrames()) == 0) {
+            // create first frame
             $this->logger->error(" PLAYER creating the first frame");
 
             $new_frame = new Frame();
@@ -93,19 +96,17 @@ class PlayerMessageHandler
 
         $this->logger->error(" PLAYER finished his turn");
 
-
         // calc player final score
         $final_score = 0;
-        $done_frames = $player->getFrames()->filter(function (Frame $frame) {
-            return $frame->getState() == 'done';
-        });
+        $done_frames = $player->getFrames();
         foreach ($done_frames as $frame) {
             $final_score += $frame->getScore();
         }
 
         $this->logger->error(sprintf(" PLAYER: updated score to %d", $final_score));
         $player->setFinalScore($final_score);
-        $player->setLastRound($player->getFrames()->last()->getRound());
+
+        $player->setLastRound($this->frameRepository->findLastFrameForPlayer($player)->getRound());
 
 
         if ($next_round == 0) {

@@ -40,6 +40,7 @@ class Player
     private ?Game $game = null;
 
     #[ORM\OneToMany(mappedBy: 'player', targetEntity: Frame::class, orphanRemoval: true)]
+    #[ORM\OrderBy(value: ["round"=>"ASC"])]
     private Collection $frames;
 
     #[ORM\Column(options: ['default' => 0])]

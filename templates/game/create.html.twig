@@ -4,8 +4,19 @@
 
 {% block body %}
 
-<div class="example-wrapper">
-    {{ form(game_form) }}
+<div class="row">
+    <div class="pt-3 offset-sm-3 offset-lg-4 col-12 col-sm-6 col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">New game!</h3>
+
+                <div class="card-text">
+                    {{ form(game_form) }}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 {% endblock %}
 

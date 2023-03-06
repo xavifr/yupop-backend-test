@@ -3,7 +3,9 @@
 namespace App\Command;
 
 use App\Message\GameMessage;
+use App\Repository\FrameRepository;
 use App\Repository\GameRepository;
+use App\Repository\PlayerRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -22,6 +24,8 @@ class TestCommand extends Command
     public function __construct(
         private MessageBusInterface    $bus,
         private GameRepository $gameRepository,
+        private FrameRepository $frameRepository,
+        private PlayerRepository $playerRepository,
         string $name = null)
     {
         parent::__construct($name);
@@ -33,7 +37,12 @@ class TestCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->bus->dispatch(new GameMessage(7));
+        $player = $this->playerRepository->find(20);
+
+        printf("PLAYER IS %s\n", $player->getName());
+        $frame = $this->frameRepository->findLastFrameForPlayer($player);
+
+        printf("FRAMES CT %s\n", $frame->getId());
 
         return Command::SUCCESS;
     }

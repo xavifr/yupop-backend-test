@@ -1,9 +1,198 @@
 {% extends 'base.html.twig' %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/game_show.js') }}"></script>
+{% endblock %}
+
 {% block title %}Hello GameController!{% endblock %}
 
 {% block body %}
-<div class="example-wrapper">
-    {{ form(frame_form) }}
-</div>
+    {% set max_throw = 10 %}
+    {% set actual_player = '' %}
+    <div class="container horizontal-scrollable bg-light bg-opacity-75 p-3 rounded mt-1">
+        <div class="row">
+            <h1>Playing game <b>{{ game.name }}</b></h1>
+        </div>
+        <div class="row mt-3">
+            <div class="col-1 text-secondary text-nowrap">
+                Rounds
+            </div>
+            <div class="col-1 text-secondary">
+                1
+            </div>
+            <div class="col-1 text-secondary">
+                2
+            </div>
+            <div class="col-1 text-secondary">
+                3
+            </div>
+            <div class="col-1 text-secondary">
+                4
+            </div>
+            <div class="col-1 text-secondary">
+                5
+            </div>
+            <div class="col-1 text-secondary">
+                6
+            </div>
+            <div class="col-1 text-secondary">
+                7
+            </div>
+            <div class="col-1 text-secondary">
+                8
+            </div>
+            <div class="col-1 text-secondary">
+                9
+            </div>
+            <div class="col-1 text-secondary">
+                10
+            </div>
+            <div class="col-1 text-secondary">
+                Score
+            </div>
+
+        </div>
+        {% for player in game.players %}
+            {% set player_partial_score = 0 %}
+            <div class="row mt-3 border-bottom border-secondary">
+                <div class="col-1 text-truncate {{ player.state == "playing" ? "bg-warning" }}">
+                    {{ player.name }}
+                </div>
+                {% for frame in player.frames %}
+                    {% if player.state == 'playing' and frame.state in ["second_roll"] %}
+                        {% set max_throw = 10-frame.roll1 %}
+                    {% endif %}
+                    {% set player_partial_score = player_partial_score + ((frame.state == "done")?frame.score:0) %}
+                    {{ _self.render_frame(frame, player_partial_score) }}
+                {% endfor %}
+
+                {% if player.frames|length < 10 %}
+                    {% for i in range(player.frames|length+1, 10) %}
+                        {{ _self.render_empty_frame() }}
+                    {% endfor %}
+                {% endif %}
+                <div class="col-1">
+                    {{ player.finalScore }}
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+    <div class="card col-12">
+        <div class="card-body">
+            <h5 class="card-title">Roll the ball!</h5>
+
+            <div class="card-text">
+                {{ form_start(frame_form) }}
+                <div id="frame_roll_buttons" class="btn-group" role="group">
+                    {% for val in range(0,10) %}
+                        {{ _self.draw_roll_button(frame_form, val, max_throw) }}
+                    {% endfor %}
+                </div>
+                <input type="hidden" id="frame_roll_max_value" value="{{ max_throw }}"/>
+                {{ form_widget(frame_form.roll, {'type': 'hidden'}) }}
+                {{ form_widget(frame_form._token, {'type': 'hidden'}) }}
+                {{ form_end(frame_form, { render_rest: false}) }}
+            </div>
+        </div>
+    </div>
 {% endblock %}
+
+{% macro render_frame(frame, partial_score) %}
+    <div class="col-1">
+        <div class="row g-0">
+            {% if frame.round < 10 %}
+                <div class="col-6 border border-secondary border-1 text-center">
+                    {{ _self.draw_roll_1(frame) }}
+                </div>
+                <div class="col-6 border border-secondary border-1">
+                    {{ _self.draw_roll_2(frame) }}
+                </div>
+            {% else %}
+                <div class="col-4 border border-secondary border-1 text-center">
+                    {{ _self.draw_roll_1(frame) }}
+                </div>
+                <div class="col-4 border border-secondary border-1">
+                    {{ _self.draw_roll_2(frame) }}
+                </div>
+                <div class="col-4 border border-secondary border-1">
+                    {{ _self.draw_roll_bonus(frame) }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="row border border-secondary border-1 g-0">
+            <div class="col-12">
+                {{ _self.draw_frame_score(frame, partial_score) }}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro draw_roll_1(frame) %}
+    {% if frame.state in ['new'] %}
+        &nbsp;
+    {% else %}
+        {% if frame.roll1 == 10 %}
+            X
+        {% else %}
+            {{ frame.roll1 }}
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% macro draw_roll_2(frame) %}
+    {% if frame.state in ['new','second_roll'] or frame.roll1 == 10 %}
+        &nbsp;
+    {% else %}
+        {% if frame.roll1+frame.roll2 == 10 %}
+            /
+        {% else %}
+            {{ frame.roll2 }}
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% macro draw_roll_bonus(frame) %}
+    {% if frame.state in ['new','second_roll'] or frame.roll1+frame.roll2 < 10 %}
+        &nbsp;
+    {% else %}
+        {{ frame.roll3 }}
+    {% endif %}
+{% endmacro %}
+
+{% macro draw_frame_score(frame, partial_score) %}
+    {% if frame.state not in ['done'] %}
+        &nbsp;
+    {% else %}
+        {{ partial_score }}
+    {% endif %}
+{% endmacro %}
+
+{% macro render_empty_frame() %}
+    <div class="col-1 text-center fw-lighter">
+        <div class="row g-0">
+            <div class="col-6 border border-secondary border-1">
+                &nbsp;
+            </div>
+            <div class="col-6 border border-secondary border-1">
+                &nbsp;
+            </div>
+        </div>
+        <div class="row border border-secondary border-1 g-0">
+            <div class="col-12">
+                &nbsp;
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+
+{% macro draw_roll_button(form, value, max_value) %}
+    {% set attr = '' %}
+    {% if value > max_value %}
+        {% set attr = 'disabled' %}
+    {% endif %}
+    <button type="button" class="btn btn-primary" {{ attr }} data-input-value="{{ value }}"
+            data-input-target="{{ form.roll.vars.id }}">{{ value }}</button>
+{% endmacro %}

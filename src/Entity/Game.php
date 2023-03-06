@@ -31,6 +31,7 @@ class Game
     private ?string $reference = null;
 
     #[ORM\OneToMany(mappedBy: 'game', targetEntity: Player::class, orphanRemoval: true)]
+    #[ORM\OrderBy(value: ["position"=>"ASC"])]
     private Collection $players;
 
     #[ORM\Column(length: 255, options: ['default' => 'new'])]

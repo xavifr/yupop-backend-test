@@ -36,11 +36,16 @@ class Frame
     private ?int $roll_2 = 0;
 
     #[ORM\Column(options: ['default' => 0])]
+    private ?int $roll_3 = null;
+
+    #[ORM\Column(options: ['default' => 0])]
     private ?int $score = 0;
 
     #[ORM\ManyToOne(inversedBy: 'frames')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Player $player = null;
+
+
 
     public function getId(): ?int
     {
@@ -130,6 +135,19 @@ class Frame
     public function setPlayer(?Player $player): self
     {
         $this->player = $player;
+
+        return $this;
+    }
+
+    public function getRoll3(): ?int
+    {
+        return $this->roll_3;
+    }
+
+    public function setRoll3(int $roll_3): self
+    {
+        $this->roll_3 = $roll_3;
+        $this->score += $roll_3;
 
         return $this;
     }

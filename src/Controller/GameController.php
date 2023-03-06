@@ -68,8 +68,11 @@ class GameController extends AbstractController
 
                 $game->addPlayer($player);
                 $this->entityManager->persist($player);
-
                 $this->entityManager->flush();
+
+                $player = new Player();
+                $form = $this->createForm(NewPlayerFormType::class, $player);
+
             } else if ($form->get('startGame')->isClicked()) {
                 $this->bus->dispatch(new GameMessage($game->getId()));
                 return $this->redirectToRoute('game_show', ['reference' => $game->getReference()]);
