@@ -5,117 +5,93 @@
     <script src="{{ asset('js/game_show.js') }}"></script>
 {% endblock %}
 
-{% block title %}Hello GameController!{% endblock %}
+{% block title %}Playing game {{ game.name }}!{% endblock %}
 
 {% block body %}
-    {% set max_throw = 10 %}
+    {% set max_throw = constant('App\\Entity\\Frame::PINS_PER_FRAME') %}
     {% set actual_player = '' %}
-    <div class="container horizontal-scrollable bg-light bg-opacity-75 p-3 rounded mt-1">
-        <div class="row">
-            <h1>Playing game <b>{{ game.name }}</b></h1>
-        </div>
-        <div class="row mt-3">
-            <div class="col-1 text-secondary text-nowrap">
-                Rounds
+    <div class="row">
+        <div class="container col-12 bg-light bg-opacity-75 p-3 rounded mt-1">
+            <div class="row">
+                <h1 class="fw-bold">{{ game.name|upper }}</h1>
             </div>
-            <div class="col-1 text-secondary">
-                1
-            </div>
-            <div class="col-1 text-secondary">
-                2
-            </div>
-            <div class="col-1 text-secondary">
-                3
-            </div>
-            <div class="col-1 text-secondary">
-                4
-            </div>
-            <div class="col-1 text-secondary">
-                5
-            </div>
-            <div class="col-1 text-secondary">
-                6
-            </div>
-            <div class="col-1 text-secondary">
-                7
-            </div>
-            <div class="col-1 text-secondary">
-                8
-            </div>
-            <div class="col-1 text-secondary">
-                9
-            </div>
-            <div class="col-1 text-secondary">
-                10
-            </div>
-            <div class="col-1 text-secondary">
-                Score
-            </div>
-
-        </div>
-        {% for player in game.players %}
-            {% set player_partial_score = 0 %}
-            <div class="row mt-3 border-bottom border-secondary">
-                <div class="col-1 text-truncate align-middle {{ player.state == "playing" ? "bg-warning" }}">
-                    {{ player.name }}
+            <div class="row mt-3">
+                <div class="col-1 text-secondary text-nowrap">
+                    &nbsp;
                 </div>
-                {% for frame in player.frames %}
-                    {% if player.state == 'playing' and frame.state in ["second_roll"] %}
-                        {% set max_throw = 10-frame.roll1 %}
-                    {% endif %}
-                    {% set player_partial_score = player_partial_score + ((frame.state == "done")?frame.score:0) %}
-                    {{ _self.render_frame(player, frame, player_partial_score) }}
-                {% endfor %}
-
-                {% if player.frames|length < 10 %}
-                    {% for i in range(player.frames|length+1, 10) %}
-                        {{ _self.render_empty_frame(i) }}
-                    {% endfor %}
-                {% endif %}
-                <div class="col-1">
-                    {{ player.finalScore }}
-                </div>
-            </div>
-        {% endfor %}
-
-    </div>
-    {% if game.state == "playing" %}
-        <div class="card col-12">
-            <div class="card-body">
-                <h5 class="card-title">Roll the ball!</h5>
-
-                <div class="card-text">
-                    {{ form_start(frame_form) }}
-                    <div id="frame_roll_buttons" class="btn-group" role="group">
-                        {% for val in range(0,10) %}
-                            {{ _self.draw_roll_button(frame_form, val, max_throw) }}
-                        {% endfor %}
+                {% for i in range(1, constant('App\\Entity\\Game::FRAMES_PER_GAME')) %}
+                    <div class="col-1 text-secondary">
+                        {{ i }}
                     </div>
-                    <input type="hidden" id="frame_roll_max_value" value="{{ max_throw }}"/>
-                    {{ form_widget(frame_form.roll, {'type': 'hidden'}) }}
-                    {{ form_widget(frame_form._token, {'type': 'hidden'}) }}
-                    {{ form_end(frame_form, { render_rest: false}) }}
+                {% endfor %}
+                <div class="col-1 text-secondary">
+                    &nbsp;
                 </div>
-            </div>
-        </div>
-    {% else %}
-        <div class="card col-12">
-            <div class="card-body">
-                <h5 class="card-title">The game has finished!</h5>
 
-                <div class="card-text">
-                    The winner is <b>{{ game.winnerPlayer.name }}</b> with <b>{{ game.winnerPlayer.finalScore }}
-                        points</b>
+            </div>
+            {% for player in game.players %}
+                <div class="row mt-3 border-bottom border-secondary {{ player.state == "playing" ? "bg-warning" }}">
+                    <div class="col-1 text-truncate align-middle">
+                        {{ player.name|capitalize }}
+                    </div>
+                    {% for frame in player.frames %}
+                        {% if player.state == 'playing' and frame.state in ["second_roll"] %}
+                            {% set max_throw = constant('App\\Entity\\Frame::PINS_PER_FRAME')-frame.roll1 %}
+                        {% endif %}
+
+                        {{ _self.render_frame(player, frame) }}
+                    {% endfor %}
+
+                    {% if player.frames|length < constant('App\\Entity\\Game::FRAMES_PER_GAME') %}
+                        {% for i in range(player.frames|length+1, constant('App\\Entity\\Game::FRAMES_PER_GAME')) %}
+                            {{ _self.render_empty_frame(i) }}
+                        {% endfor %}
+                    {% endif %}
+                    <div class="col-1 fw-bold">
+                        {{ player.finalScore }}
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+        {% if game.state == "playing" %}
+            <div class="card col-12">
+                <div class="card-body">
+                    <h5 class="card-title">Roll the ball!</h5>
+
+                    <div class="card-text">
+                        {{ form_start(frame_form) }}
+                        <div id="frame_roll_buttons" class="btn-group" role="group">
+                            {% for val in range(0,constant('App\\Entity\\Frame::PINS_PER_FRAME')) %}
+                                {{ _self.draw_roll_button(frame_form, val, max_throw) }}
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" id="frame_roll_max_value" value="{{ max_throw }}"/>
+                        {{ form_widget(frame_form.roll, {'type': 'hidden'}) }}
+                        {{ form_widget(frame_form._token, {'type': 'hidden'}) }}
+                        {{ form_end(frame_form, { render_rest: false}) }}
+                    </div>
                 </div>
             </div>
-        </div>
-    {% endif %}
+        {% else %}
+            <div class="card col-12">
+                <div class="card-body">
+                    <h5 class="card-title">The game has finished!</h5>
+
+                    <div class="card-text">
+                        The winner is <b>{{ game.winnerPlayer.name }}</b> with <b>{{ game.winnerPlayer.finalScore }}
+                            points</b>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
 
-{% macro render_frame(player, frame, partial_score) %}
-    <div class="col-1">
+{% macro render_frame(player, frame) %}
+    <div class="col-1 m-0 p-0">
         <div class="row g-0">
-            {% if frame.round < 10 %}
+            {% if frame.round < constant('App\\Entity\\Game::FRAMES_PER_GAME') %}
                 <div class="col-6 border border-secondary border-1 text-center">
                     {{ _self.draw_roll_1(frame) }}
                 </div>
@@ -143,9 +119,9 @@
 {% endmacro %}
 
 {% macro render_empty_frame(round) %}
-    <div class="col-1 text-center fw-lighter">
+    <div class="col-1 m-0 p-0">
         <div class="row g-0">
-            {% if round < 10 %}
+            {% if round < constant('App\\Entity\\Game::FRAMES_PER_GAME') %}
                 <div class="col-6 border border-secondary border-1 text-center">
                     &nbsp;
                 </div>
@@ -176,8 +152,10 @@
     {% if frame.state in ['new'] %}
         &nbsp;
     {% else %}
-        {% if frame.roll1 == 10 %}
+        {% if frame.roll1 == constant('App\\Entity\\Frame::PINS_PER_FRAME') %}
             X
+        {% elseif frame.roll1 == 0 %}
+            -
         {% else %}
             {{ frame.roll1 }}
         {% endif %}
@@ -185,11 +163,13 @@
 {% endmacro %}
 
 {% macro draw_roll_2(frame) %}
-    {% if frame.state in ['new','second_roll'] or frame.roll1 == 10 %}
+    {% if frame.state in ['new','second_roll'] or frame.roll1 == constant('App\\Entity\\Frame::PINS_PER_FRAME') %}
         &nbsp;
     {% else %}
-        {% if frame.roll1+frame.roll2 == 10 %}
+        {% if frame.roll1+frame.roll2 == constant('App\\Entity\\Frame::PINS_PER_FRAME') %}
             /
+        {% elseif frame.roll2 == 0 %}
+            -
         {% else %}
             {{ frame.roll2 }}
         {% endif %}
@@ -197,9 +177,9 @@
 {% endmacro %}
 
 {% macro draw_roll_bonus(frame) %}
-    {% if frame.state in ['new','second_roll','third_roll'] or frame.roll1+frame.roll2 < 10 %}
+    {% if frame.state in ['new','second_roll','third_roll'] or frame.roll1+frame.roll2 < constant('App\\Entity\\Frame::PINS_PER_FRAME') %}
         &nbsp;
-    {% elseif frame.roll3 == 10 %}
+    {% elseif frame.roll3 == constant('App\\Entity\\Frame::PINS_PER_FRAME') %}
         X
     {% else %}
         {{ frame.roll3 }}
