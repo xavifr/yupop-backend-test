@@ -2,10 +2,8 @@
 
 namespace App\Form;
 
-use App\Entity\Game;
 use App\Entity\Player;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,10 +15,8 @@ class NewPlayerFormType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, ['required' => false])
-        ->add('addPlayer', SubmitType::class, ['label' => 'Add Player'])
-            ->add('startGame', SubmitType::class, ['label' => 'Start Game'])
-
-    ;
+            ->add('addPlayer', SubmitType::class, ['label' => 'Add Player'])
+            ->add('startGame', SubmitType::class, ['label' => 'Start Game']);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

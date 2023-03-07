@@ -2,17 +2,13 @@
 
 namespace App\Command;
 
-use App\Message\GameMessage;
 use App\Repository\FrameRepository;
 use App\Repository\GameRepository;
 use App\Repository\PlayerRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsCommand(
@@ -22,11 +18,11 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class TestCommand extends Command
 {
     public function __construct(
-        private MessageBusInterface    $bus,
-        private GameRepository $gameRepository,
-        private FrameRepository $frameRepository,
-        private PlayerRepository $playerRepository,
-        string $name = null)
+        private MessageBusInterface $bus,
+        private GameRepository      $gameRepository,
+        private FrameRepository     $frameRepository,
+        private PlayerRepository    $playerRepository,
+        string                      $name = null)
     {
         parent::__construct($name);
     }

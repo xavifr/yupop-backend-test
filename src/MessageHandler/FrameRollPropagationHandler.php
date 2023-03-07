@@ -8,19 +8,16 @@ use App\Entity\Player;
 use App\Message\FrameMessage;
 use App\Message\FrameRollPropagationMessage;
 use App\Repository\FrameRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Workflow\WorkflowInterface;
 
 #[AsMessageHandler]
 class FrameRollPropagationHandler
 {
     public function __construct(
-        private FrameRepository        $frameRepository,
-        private MessageBusInterface    $bus,
+        private FrameRepository     $frameRepository,
+        private MessageBusInterface $bus,
     )
     {
     }

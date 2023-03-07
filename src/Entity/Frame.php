@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Repository\FrameRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FrameRepository::class)]
 #[ORM\UniqueConstraint(
@@ -50,7 +49,6 @@ class Frame
     #[ORM\ManyToOne(inversedBy: 'frames')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Player $player = null;
-
 
 
     public function getId(): ?int

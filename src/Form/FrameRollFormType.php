@@ -15,8 +15,7 @@ class FrameRollFormType extends AbstractType
     {
         $builder
             ->add('roll', NumberType::class, ['required' => true, 'mapped' => false])
-            ->add('submit', SubmitType::class)
-        ;
+            ->add('submit', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -29,6 +29,74 @@ class GameTest extends KernelTestCase
     private GameMessageHandler $gameMessageHandler;
     private FrameMessageHandler $frameMessageHandler;
 
+    public function testFastOnePlayerGame(): void
+    {
+        $game = $this->gameRepository->findOneByReference("random_reference_2");
+        $this->assertEquals(Game::STATE_NEW, $game->getState());
+
+        ($this->gameMessageHandler)(new GameMessage($game->getId()));
+        $this->assertEquals(Game::STATE_PLAYING, $game->getState());
+
+        $player = $game->getPlayers()->first();
+        $this->assertEquals(Player::STATE_PLAYING, $player->getState());
+
+        for ($i = 1; $i <= Game::FRAMES_PER_GAME; $i++) {
+            /** @var Frame $frame */
+            $frame = $player->getFrames()->filter(function (Frame $f) {
+                return in_array($f->getState(), [Frame::STATE_NEW, Frame::STATE_SECOND_ROLL]);
+            })->first();
+
+            ($this->frameMessageHandler)(new FrameMessage($frame->getId(), 1));
+            ($this->frameMessageHandler)(new FrameMessage($frame->getId(), 1));
+
+            $this->assertEquals(Frame::STATE_DONE, $frame->getState());
+        }
+
+        // game must have finished
+        $this->assertEquals(Game::STATE_FINISHED, $game->getState());
+
+        // players final score must be 20
+        $this->assertEquals(20, $player->getFinalScore());
+
+        // game's winner must be the player
+        $this->assertEquals($player->getId(), $game->getWinnerPlayer()->getId());
+    }
+
+    public function testFastTwoPlayersGame(): void
+    {
+        $game = $this->gameRepository->findOneByReference("random_reference_4");
+
+        ($this->gameMessageHandler)(new GameMessage($game->getId()));
+        $this->assertEquals(Game::STATE_PLAYING, $game->getState());
+
+        $players = $game->getPlayers();
+
+        for ($i = 1; $i <= Game::FRAMES_PER_GAME; $i++) {
+            foreach ($players as $j => $player) {
+                /** @var Frame $frame */
+                $frame = $player->getFrames()->filter(function (Frame $f) {
+                    return in_array($f->getState(), [Frame::STATE_NEW, Frame::STATE_SECOND_ROLL]);
+                })->first();
+
+                // player[0] rolls always 1, player[1] rolls always 2
+                ($this->frameMessageHandler)(new FrameMessage($frame->getId(), $j + 1));
+                ($this->frameMessageHandler)(new FrameMessage($frame->getId(), $j + 1));
+
+                $this->assertEquals(Frame::STATE_DONE, $frame->getState());
+            }
+        }
+
+        // game must have finished
+        $this->assertEquals(Game::STATE_FINISHED, $game->getState());
+
+        // players final score must be 20 and 40
+        $this->assertEquals(20, $players[0]->getFinalScore());
+        $this->assertEquals(40, $players[1]->getFinalScore());
+
+        // game's winner must be the player
+        $this->assertEquals($players[1]->getId(), $game->getWinnerPlayer()->getId());
+    }
+
     protected function setUp(): void
     {
         /** @var GameRepository $gameRepository */
@@ -42,41 +110,5 @@ class GameTest extends KernelTestCase
 
         $this->gameMessageHandler = new GameMessageHandler($this->entityManager, $this->gameRepository, $this->gameStateMachine, $this->bus, $this->logger);
         $this->frameMessageHandler = new FrameMessageHandler($this->entityManager, $this->frameRepository, $this->frameStateMachine, $this->bus, $this->logger);
-    }
-
-    public function testFastGame(): void {
-        $game = $this->gameRepository->findOneByReference("random_reference_2");
-        $this->assertEquals(Game::STATE_NEW, $game->getState());
-
-        ($this->gameMessageHandler)(new GameMessage($game->getId()));
-        $this->assertEquals(Game::STATE_PLAYING, $game->getState());
-
-        $player = $game->getPlayers()->first();
-        $this->assertEquals(Player::STATE_PLAYING, $player->getState());
-
-        for($i =1; $i <= Game::FRAMES_PER_GAME; $i++) {
-            $this->entityManager->refresh($player);
-
-            /** @var Frame $frame */
-            $frame = $player->getFrames()->filter(function(Frame $f) {
-                return in_array($f->getState(), [Frame::STATE_NEW, Frame::STATE_SECOND_ROLL]);
-            })->first();
-
-            ($this->frameMessageHandler)(new FrameMessage($frame->getId(), 1));
-            ($this->frameMessageHandler)(new FrameMessage($frame->getId(), 1));
-
-            $this->assertEquals(Frame::STATE_DONE, $frame->getState());
-        }
-
-        $this->entityManager->refresh($player);
-
-        // game must have finished
-        $this->assertEquals(Game::STATE_FINISHED, $game->getState());
-
-        // players final score must be 20
-        $this->assertEquals(20, $player->getFinalScore());
-
-        // game's winner must be the player
-        $this->assertEquals($player->getId(), $game->getWinnerPlayer()->getId());
     }
 }

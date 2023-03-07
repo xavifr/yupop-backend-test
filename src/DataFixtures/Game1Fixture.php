@@ -2,9 +2,7 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Frame;
 use App\Entity\Game;
-use App\Entity\Player;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 

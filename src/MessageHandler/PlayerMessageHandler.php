@@ -10,7 +10,6 @@ use App\Message\PlayerMessage;
 use App\Repository\FrameRepository;
 use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -25,7 +24,6 @@ class PlayerMessageHandler
         private FrameRepository        $frameRepository,
         private WorkflowInterface      $playerStateMachine,
         private MessageBusInterface    $bus,
-        private ?LoggerInterface       $logger,
     )
     {
     }
@@ -40,8 +38,6 @@ class PlayerMessageHandler
             throw new Exception("Cannot transition a player if the game is not running");
         }
 
-        $this->logger->error(sprintf("Received message for player %s in state '%s'", $player->getName(), $player->getState()));
-
         // initialize new messages to deliver
         $new_messages = [];
 
@@ -53,9 +49,6 @@ class PlayerMessageHandler
                 $new_messages = $this->atPlaying($player);
                 break;
         }
-
-        $this->logger->error(sprintf(" PLAYER: New state is %s", $player->getState()));
-
 
         // persist entity
         $this->entityManager->persist($player);
@@ -75,8 +68,6 @@ class PlayerMessageHandler
     {
         if (count($player->getFrames()) == 0) {
             // create first frame
-            $this->logger->error(" PLAYER: creating the first frame");
-
             $new_frame = new Frame();
             $new_frame->setPlayer($player);
             $new_frame->setRound(1);
@@ -99,35 +90,26 @@ class PlayerMessageHandler
     {
         $out_messages = [];
 
-        $this->logger->error(" PLAYER finished his turn");
-
         // calc player final score
         $final_score = 0;
         foreach ($player->getFrames() as $frame) {
             $final_score += $frame->getScore();
         }
-
-        $this->logger->error(sprintf(" PLAYER: updated score to %d", $final_score));
         $player->setFinalScore($final_score);
 
         $player->setLastRound($this->frameRepository->findLastFrameForPlayer($player)->getRound());
 
 
         if ($player->getFrames()->count() == Game::FRAMES_PER_GAME) {
-            $this->logger->error(sprintf(" PLAYER: this was the last round, end game"));
-
             // end game for this player
             $this->playerStateMachine->apply($player, 'end_game');
 
             $out_messages[] = new GameMessage($player->getGame()->getId());
         } else {
-
-            $this->logger->error(sprintf(" PLAYER: creating new frame"));
-
             // create a new frame for next round
             $new_frame = new Frame();
             $new_frame->setPlayer($player);
-            $new_frame->setRound($player->getFrames()->count()+1);
+            $new_frame->setRound($player->getFrames()->count() + 1);
             $player->addFrame($new_frame);
             $this->entityManager->persist($new_frame);
 

@@ -6,9 +6,8 @@ use App\Repository\GameRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: GameRepository::class)]
 #[UniqueEntity('reference')]
@@ -36,7 +35,7 @@ class Game
     private ?string $reference = null;
 
     #[ORM\OneToMany(mappedBy: 'game', targetEntity: Player::class, orphanRemoval: true)]
-    #[ORM\OrderBy(value: ["position"=>"ASC"])]
+    #[ORM\OrderBy(value: ["position" => "ASC"])]
     private Collection $players;
 
     #[ORM\Column(length: 255, options: ['default' => self::STATE_NEW])]

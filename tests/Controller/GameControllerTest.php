@@ -45,7 +45,8 @@ class GameControllerTest extends WebTestCase
 
     }
 
-    public function testPlayerCreate(): void {
+    public function testPlayerCreate(): void
+    {
         $client = static::createClient();
         $crawler = $client->request('GET', '/setup/random_reference_1');
 
@@ -134,6 +135,48 @@ class GameControllerTest extends WebTestCase
 
         $this->assertEquals(Frame::STATE_NEW, $player1_frames->first()->getState());
     }
+
+    public function testGameStartNoPlayers(): void
+    {
+        $client = static::createClient();
+
+        // Request setup for game
+        $crawler = $client->request('GET', '/setup/random_reference_1');
+        $this->assertResponseIsSuccessful();
+
+        // Start game
+        $client->submitForm('Start Game', [
+            'new_player_form[startGame]' => true,
+        ]);
+
+        $this->assertResponseIsUnprocessable();
+    }
+
+    public function testGameStartAlreadyStarted(): void
+    {
+        $client = static::createClient();
+
+        // Set game as playing using entitymanager
+        $game = static::getContainer()->get(GameRepository::class)->findOneByReference("random_reference_2");
+        $game->setState(Game::STATE_PLAYING);
+        static::getContainer()->get(GameRepository::class)->save($game);
+
+        // Request setup for game
+        $crawler = $client->request('GET', '/setup/random_reference_2');
+        $this->assertResponseRedirects();
+
+    }
+
+    public function testGameShowNew(): void
+    {
+        $client = static::createClient();
+
+        // Request setup for game
+        $crawler = $client->request('GET', '/show/random_reference_1');
+        $this->assertResponseRedirects();
+
+    }
+
 
     public function testGameRoll(): void
     {

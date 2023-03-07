@@ -10,7 +10,6 @@ use App\Message\FrameRollPropagationMessage;
 use App\Message\PlayerMessage;
 use App\Repository\FrameRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -24,7 +23,6 @@ class FrameMessageHandler
         private FrameRepository        $frameRepository,
         private WorkflowInterface      $frameStateMachine,
         private MessageBusInterface    $bus,
-        private ?LoggerInterface       $logger,
     )
     {
     }
@@ -40,8 +38,6 @@ class FrameMessageHandler
         } else if ($frame->getPlayer()->getState() != Player::STATE_PLAYING) {
             throw new Exception("Cannot transition a frame if the player is not playing");
         }
-
-        $this->logger->error(sprintf("Received message for frame %d from player %s in state '%s'", $frame->getRound(), $frame->getPlayer()->getName(), $frame->getState()));
 
         // initialize new messages to deliver
         $new_messages = [];
@@ -60,8 +56,6 @@ class FrameMessageHandler
                 $this->atWaitScore($frame, $message->getPinsRolled());
                 break;
         }
-
-        $this->logger->error(sprintf("  new state is %s", $frame->getState()));
 
         // persist entity
         $this->entityManager->persist($frame);
@@ -94,7 +88,6 @@ class FrameMessageHandler
 
         if ($pins_rolled == Frame::PINS_PER_FRAME) {
             // player scored strike!
-            $this->logger->error(sprintf("  strike!"));
 
             if ($frame->getRound() == Game::FRAMES_PER_GAME) {
                 // at last round, allow a bonus roll!
@@ -108,8 +101,6 @@ class FrameMessageHandler
                 $out_messages[] = new PlayerMessage($frame->getPlayer()->getId());
             }
         } else {
-            $this->logger->error(sprintf("  rolled %d pins at first roll", $pins_rolled));
-
             // wait for second roll
             $this->frameStateMachine->apply($frame, 'roll_first');
         }
@@ -126,8 +117,8 @@ class FrameMessageHandler
      */
     private function atSecondRoll(Frame $frame, int $pins_rolled): array
     {
-        if (($frame->getRoll1()+$pins_rolled) > Frame::PINS_PER_FRAME) {
-            throw new Exception(sprintf("Cannot roll more than %d (%d) pins on second roll", Frame::PINS_PER_FRAME-$frame->getRoll1(), $frame->getRoll1()));
+        if (($frame->getRoll1() + $pins_rolled) > Frame::PINS_PER_FRAME) {
+            throw new Exception(sprintf("Cannot roll more than %d (%d) pins on second roll", Frame::PINS_PER_FRAME - $frame->getRoll1(), $frame->getRoll1()));
         }
 
         $out_messages = [];
@@ -140,7 +131,6 @@ class FrameMessageHandler
         // all pins are down
         if ($frame->getRoll1() + $frame->getRoll2() == Frame::PINS_PER_FRAME) {
             // player scored spare!
-            $this->logger->error(sprintf("  spare!"));
 
             if ($frame->getRound() == Game::FRAMES_PER_GAME) {
                 $this->frameStateMachine->apply($frame, 'spare_bonus');
@@ -152,8 +142,6 @@ class FrameMessageHandler
 
             }
         } else {
-            $this->logger->error(sprintf("  rolled %d pins at second roll", $pins_rolled));
-
             // not all pins went down, frame is done
             $this->frameStateMachine->apply($frame, 'roll_second');
         }
@@ -211,8 +199,6 @@ class FrameMessageHandler
             throw new Exception(sprintf("Cannot receive more than %d pins on wait state", Frame::PINS_PER_FRAME));
         }
 
-        $this->logger->error(sprintf("  received a propagation score of %d", $pins_rolled));
-
         // append the pins rolled to the current frame
         $frame->setScore($frame->getScore() + $pins_rolled);
 
@@ -221,8 +207,6 @@ class FrameMessageHandler
 
         // if pending wait rolls is zero, transition to done
         if ($frame->getScoreWait() == 0) {
-            $this->logger->error(sprintf("  closing frame"));
-
             $this->frameStateMachine->apply($frame, 'receive_score_done');
         }
     }

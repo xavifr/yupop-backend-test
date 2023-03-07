@@ -43,7 +43,7 @@ class Player
     private ?Game $game = null;
 
     #[ORM\OneToMany(mappedBy: 'player', targetEntity: Frame::class, orphanRemoval: true)]
-    #[ORM\OrderBy(value: ["round"=>"ASC"])]
+    #[ORM\OrderBy(value: ["round" => "ASC"])]
     private Collection $frames;
 
     #[ORM\Column(options: ['default' => 0])]
@@ -107,18 +107,6 @@ class Player
         return $this;
     }
 
-    public function getGame(): ?Game
-    {
-        return $this->game;
-    }
-
-    public function setGame(?Game $game): self
-    {
-        $this->game = $game;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Frame>
      */
@@ -153,6 +141,18 @@ class Player
     public function setPositionValue()
     {
         $this->position = $this->getGame()->getPlayers()->count();
+    }
+
+    public function getGame(): ?Game
+    {
+        return $this->game;
+    }
+
+    public function setGame(?Game $game): self
+    {
+        $this->game = $game;
+
+        return $this;
     }
 
     public function getLastRound(): ?int
