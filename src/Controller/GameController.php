@@ -6,17 +6,15 @@ use App\Entity\Frame;
 use App\Entity\Game;
 use App\Entity\Player;
 use App\Form\FrameRollFormType;
-use App\Form\NewPlayerFormType;
 use App\Form\NewGameFormType;
+use App\Form\NewPlayerFormType;
 use App\Message\FrameMessage;
 use App\Message\GameMessage;
-use App\Repository\GameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -79,8 +77,12 @@ class GameController extends AbstractController
                 $form = $this->createForm(NewPlayerFormType::class, $player);
 
             } else if ($form->get('startGame')->isClicked()) {
-                $this->bus->dispatch(new GameMessage($game->getId()));
-                return $this->redirectToRoute('game_show', ['reference' => $game->getReference()]);
+                if ($game->getPlayers()->count() > 0) {
+                    $this->bus->dispatch(new GameMessage($game->getId()));
+                    return $this->redirectToRoute('game_show', ['reference' => $game->getReference()]);
+                } else {
+                    $form->addError(new FormError("Game must have at least one player to be started"));
+                }
             }
         }
 
@@ -93,7 +95,7 @@ class GameController extends AbstractController
     #[Route('/show/{reference}', name: 'game_show')]
     public function show(
         Request $request,
-        Game $game,
+        Game    $game,
     ): Response
     {
         if ($game->getState() == Game::STATE_NEW) {
@@ -101,7 +103,7 @@ class GameController extends AbstractController
         }
 
         // find player in playing state
-        $players_playing = $game->getPlayers()->filter(function(Player $player) {
+        $players_playing = $game->getPlayers()->filter(function (Player $player) {
             return $player->getState() == 'playing';
         })->first();
 

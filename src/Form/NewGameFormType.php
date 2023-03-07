@@ -27,7 +27,7 @@ class NewGameFormType extends AbstractType
     {
         $builder
             ->add('name', TextType::class)
-            ->add('submit', SubmitType::class);
+            ->add('create', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

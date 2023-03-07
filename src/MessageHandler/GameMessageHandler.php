@@ -23,7 +23,6 @@ class GameMessageHandler
         private WorkflowInterface      $gameStateMachine,
         private MessageBusInterface    $bus,
         private ?LoggerInterface       $logger,
-
     )
     {
     }
@@ -151,5 +150,10 @@ class GameMessageHandler
 
             $game->setWinnerPlayer($winner);
         }
+
+        $this->gameStateMachine->apply($game, 'check_winner');
+
+
+
     }
 }

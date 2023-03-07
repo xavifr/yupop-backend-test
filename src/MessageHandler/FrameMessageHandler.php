@@ -105,7 +105,7 @@ class FrameMessageHandler
                 $frame->setScoreWait(2);
 
                 // create next player round
-                $out_messages[] = new PlayerMessage($frame->getPlayer()->getId(), $frame->getRound() + 1);
+                $out_messages[] = new PlayerMessage($frame->getPlayer()->getId());
             }
         } else {
             $this->logger->error(sprintf("  rolled %d pins at first roll", $pins_rolled));
@@ -160,10 +160,7 @@ class FrameMessageHandler
 
         if ($frame->getState() != Frame::STATE_THIRD_ROLL) {
             // generate new frame or end of game
-            $out_messages[] = new PlayerMessage($frame->getPlayer()->getId(), match ($frame->getRound()) {
-                Game::FRAMES_PER_GAME => 0,
-                default => $frame->getRound() + 1
-            });
+            $out_messages[] = new PlayerMessage($frame->getPlayer()->getId());
         }
 
 
@@ -195,7 +192,7 @@ class FrameMessageHandler
         $out_messages[] = new FrameRollPropagationMessage($frame->getId(), $pins_rolled);
 
         // generate end of game
-        $out_messages[] = new PlayerMessage($frame->getPlayer()->getId(), 0);
+        $out_messages[] = new PlayerMessage($frame->getPlayer()->getId());
 
         return $out_messages;
     }

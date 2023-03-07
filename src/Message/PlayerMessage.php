@@ -7,7 +7,6 @@ class PlayerMessage
 
     public function __construct(
         private int $id,
-        private int $next_round = 0,
     )
     {
     }
@@ -17,9 +16,5 @@ class PlayerMessage
         return $this->id;
     }
 
-    public function getNextRound(): int
-    {
-        return $this->next_round;
-    }
 
 }

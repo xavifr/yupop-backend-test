@@ -50,7 +50,7 @@ class PlayerMessageHandler
                 $this->atWaiting($player);
                 break;
             case Player::STATE_PLAYING:
-                $new_messages = $this->atPlaying($player, $message->getNextRound());
+                $new_messages = $this->atPlaying($player);
                 break;
         }
 
@@ -93,15 +93,10 @@ class PlayerMessageHandler
      *  prepare next round or finish his game
      *
      * @param Player $player
-     * @param int $next_round
      * @return array
      */
-    private function atPlaying(Player $player, int $next_round): array
+    private function atPlaying(Player $player): array
     {
-        if ($next_round > Game::FRAMES_PER_GAME) {
-            throw new Exception(sprintf("Cannot create a frame round greater than %d", Game::FRAMES_PER_GAME));
-        }
-
         $out_messages = [];
 
         $this->logger->error(" PLAYER finished his turn");
@@ -118,7 +113,7 @@ class PlayerMessageHandler
         $player->setLastRound($this->frameRepository->findLastFrameForPlayer($player)->getRound());
 
 
-        if ($next_round == 0) {
+        if ($player->getFrames()->count() == Game::FRAMES_PER_GAME) {
             $this->logger->error(sprintf(" PLAYER: this was the last round, end game"));
 
             // end game for this player
@@ -127,23 +122,20 @@ class PlayerMessageHandler
             $out_messages[] = new GameMessage($player->getGame()->getId());
         } else {
 
-            $this->logger->error(sprintf(" PLAYER: creating new frame %d", $next_round));
+            $this->logger->error(sprintf(" PLAYER: creating new frame"));
 
             // create a new frame for next round
             $new_frame = new Frame();
             $new_frame->setPlayer($player);
-            $new_frame->setRound($next_round);
+            $new_frame->setRound($player->getFrames()->count()+1);
             $player->addFrame($new_frame);
             $this->entityManager->persist($new_frame);
 
-            // if not creating at bonus frame
-            if ($next_round <= Game::FRAMES_PER_GAME) {
-                // transition player to waiting state
-                $this->playerStateMachine->apply($player, 'end_frame');
+            // transition player to waiting state
+            $this->playerStateMachine->apply($player, 'end_frame');
 
-                // force a new player election
-                $out_messages[] = new GameMessage($player->getGame()->getId());
-            }
+            // force a new player election
+            $out_messages[] = new GameMessage($player->getGame()->getId());
         }
 
         return $out_messages;

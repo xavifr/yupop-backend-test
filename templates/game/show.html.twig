@@ -204,6 +204,6 @@
     {% if value > max_value %}
         {% set attr = 'disabled' %}
     {% endif %}
-    <button type="button" class="btn btn-primary" {{ attr }} data-input-value="{{ value }}"
+    <button name="roll{{ value }}" type="button" class="btn btn-primary" {{ attr }} data-input-value="{{ value }}"
             data-input-target="{{ form.roll.vars.id }}">{{ value }}</button>
 {% endmacro %}
