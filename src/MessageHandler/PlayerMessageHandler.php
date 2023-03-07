@@ -35,6 +35,11 @@ class PlayerMessageHandler
         // get entity
         $player = $this->playerRepository->find($message->getId());
 
+        // check game in correct state
+        if ($player->getGame()->getState() != Game::STATE_PLAYING) {
+            throw new Exception("Cannot transition a player if the game is not running");
+        }
+
         $this->logger->error(sprintf("Received message for player %s in state '%s'", $player->getName(), $player->getState()));
 
         // initialize new messages to deliver

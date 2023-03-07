@@ -4,6 +4,7 @@ namespace App\MessageHandler;
 
 use App\Entity\Frame;
 use App\Entity\Game;
+use App\Entity\Player;
 use App\Message\FrameMessage;
 use App\Message\FrameRollPropagationMessage;
 use App\Repository\FrameRepository;
@@ -40,11 +41,17 @@ class FrameRollPropagationHandler
         // get current frame
         $frame = $this->frameRepository->find($message->getId());
 
+        // check player and game in correct state
+        if ($frame->getPlayer()->getGame()->getState() != Game::STATE_PLAYING) {
+            throw new Exception("Cannot propagate a score on a frame if the game is not running");
+        } else if ($frame->getPlayer()->getState() != Player::STATE_PLAYING) {
+            throw new Exception("Cannot propagate a score on a frame if the player is not playing");
+        }
+
         // find valid frames to propagate score
         /** @var Frame[] $frames_to_propagate */
         $frames_to_propagate = $frame->getPlayer()->getFrames()->filter(function (Frame $select_frame) use ($frame) {
-            return $select_frame->getId() != $frame->getId()
-                && $select_frame->getRound() < $frame->getRound()
+            return $select_frame->getRound() < $frame->getRound()
                 && $select_frame->getState() == Frame::STATE_WAIT_SCORE
                 && $select_frame->getScoreWait() > 0;
         });

@@ -4,6 +4,7 @@ namespace App\MessageHandler;
 
 use App\Entity\Frame;
 use App\Entity\Game;
+use App\Entity\Player;
 use App\Message\FrameMessage;
 use App\Message\FrameRollPropagationMessage;
 use App\Message\PlayerMessage;
@@ -32,6 +33,13 @@ class FrameMessageHandler
     {
         // get entity
         $frame = $this->frameRepository->find($message->getId());
+
+        // check player and game in correct state
+        if ($frame->getPlayer()->getGame()->getState() != Game::STATE_PLAYING) {
+            throw new Exception("Cannot transition a frame if the game is not running");
+        } else if ($frame->getPlayer()->getState() != Player::STATE_PLAYING) {
+            throw new Exception("Cannot transition a frame if the player is not playing");
+        }
 
         $this->logger->error(sprintf("Received message for frame %d from player %s in state '%s'", $frame->getRound(), $frame->getPlayer()->getName(), $frame->getState()));
 
@@ -81,6 +89,9 @@ class FrameMessageHandler
         // update roll1
         $frame->setRoll1($pins_rolled);
 
+        // force roll propagation to pending frames
+        $out_messages[] = new FrameRollPropagationMessage($frame->getId(), $pins_rolled);
+
         if ($pins_rolled == Frame::PINS_PER_FRAME) {
             // player scored strike!
             $this->logger->error(sprintf("  strike!"));
@@ -103,9 +114,6 @@ class FrameMessageHandler
             $this->frameStateMachine->apply($frame, 'roll_first');
         }
 
-        // force roll propagation to pending frames
-        $out_messages[] = new FrameRollPropagationMessage($frame->getId(), $pins_rolled);
-
         return $out_messages;
     }
 
@@ -125,6 +133,9 @@ class FrameMessageHandler
         $out_messages = [];
         // update roll2
         $frame->setRoll2($pins_rolled);
+
+        // propagate score to other frames
+        $out_messages[] = new FrameRollPropagationMessage($frame->getId(), $pins_rolled);
 
         // all pins are down
         if ($frame->getRoll1() + $frame->getRoll2() == Frame::PINS_PER_FRAME) {
@@ -154,9 +165,6 @@ class FrameMessageHandler
                 default => $frame->getRound() + 1
             });
         }
-
-        // propagate score to other frames
-        $out_messages[] = new FrameRollPropagationMessage($frame->getId(), $pins_rolled);
 
 
         return $out_messages;
