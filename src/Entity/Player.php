@@ -16,6 +16,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class Player
 {
+    const STATE_WAITING = 'waiting';
+    const STATE_PLAYING = 'playing';
+    const STATE_FINISHED = 'finished';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -26,8 +29,8 @@ class Player
     #[Assert\NotBlank]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255, options: ['default' => 'waiting'])]
-    private ?string $state = 'waiting';
+    #[ORM\Column(length: 255, options: ['default' => self::STATE_WAITING])]
+    private ?string $state = self::STATE_WAITING;
 
     #[ORM\Column(options: ['default' => 0])]
     private ?int $final_score = 0;

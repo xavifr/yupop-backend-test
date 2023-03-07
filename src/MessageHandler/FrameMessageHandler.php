@@ -4,13 +4,13 @@ namespace App\MessageHandler;
 
 use App\Entity\Frame;
 use App\Entity\Game;
-use App\Entity\Player;
 use App\Message\FrameMessage;
 use App\Message\FrameRollPropagationMessage;
 use App\Message\PlayerMessage;
 use App\Repository\FrameRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -39,16 +39,16 @@ class FrameMessageHandler
         $new_messages = [];
 
         switch ($frame->getState()) {
-            case 'new':
+            case Frame::STATE_NEW:
                 $new_messages = $this->atNew($frame, $message->getPinsRolled());
                 break;
-            case 'second_roll':
+            case Frame::STATE_SECOND_ROLL:
                 $new_messages = $this->atSecondRoll($frame, $message->getPinsRolled());
                 break;
-            case 'third_roll':
+            case Frame::STATE_THIRD_ROLL:
                 $new_messages = $this->atThirdRoll($frame, $message->getPinsRolled());
                 break;
-            case 'wait_score':
+            case Frame::STATE_WAIT_SCORE:
                 $this->atWaitScore($frame, $message->getPinsRolled());
                 break;
         }
@@ -72,6 +72,10 @@ class FrameMessageHandler
      */
     private function atNew(Frame $frame, int $pins_rolled): array
     {
+        if ($pins_rolled > Frame::PINS_PER_FRAME) {
+            throw new Exception(sprintf("Cannot roll more than %d pins on first roll", Frame::PINS_PER_FRAME));
+        }
+
         $out_messages = [];
 
         // update roll1
@@ -114,8 +118,11 @@ class FrameMessageHandler
      */
     private function atSecondRoll(Frame $frame, int $pins_rolled): array
     {
-        $out_messages = [];
+        if (($frame->getRoll1()+$pins_rolled) > Frame::PINS_PER_FRAME) {
+            throw new Exception(sprintf("Cannot roll more than %d (%d) pins on second roll", Frame::PINS_PER_FRAME-$frame->getRoll1(), $frame->getRoll1()));
+        }
 
+        $out_messages = [];
         // update roll2
         $frame->setRoll2($pins_rolled);
 
@@ -140,7 +147,7 @@ class FrameMessageHandler
             $this->frameStateMachine->apply($frame, 'roll_second');
         }
 
-        if ($frame->getState() != "third_roll") {
+        if ($frame->getState() != Frame::STATE_THIRD_ROLL) {
             // generate new frame or end of game
             $out_messages[] = new PlayerMessage($frame->getPlayer()->getId(), match ($frame->getRound()) {
                 Game::FRAMES_PER_GAME => 0,
@@ -164,6 +171,10 @@ class FrameMessageHandler
      */
     private function atThirdRoll(Frame $frame, int $pins_rolled): array
     {
+        if ($pins_rolled > Frame::PINS_PER_FRAME) {
+            throw new Exception(sprintf("Cannot roll more than %d pins on third roll", Frame::PINS_PER_FRAME));
+        }
+
         $out_messages = [];
 
         // update roll3
@@ -191,6 +202,9 @@ class FrameMessageHandler
      */
     private function atWaitScore(Frame $frame, int $pins_rolled): void
     {
+        if ($pins_rolled > Frame::PINS_PER_FRAME) {
+            throw new Exception(sprintf("Cannot receive more than %d pins on wait state", Frame::PINS_PER_FRAME));
+        }
 
         $this->logger->error(sprintf("  received a propagation score of %d", $pins_rolled));
 

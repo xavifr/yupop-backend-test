@@ -13,6 +13,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class Frame
 {
+    const STATE_NEW = 'new';
+    const STATE_SECOND_ROLL = 'second_roll';
+    const STATE_THIRD_ROLL = 'third_roll';
+    const STATE_WAIT_SCORE = 'wait_score';
+    const STATE_DONE = 'done';
+
     const PINS_PER_FRAME = 10;
 
     #[ORM\Id]
@@ -23,8 +29,8 @@ class Frame
     #[ORM\Column]
     private ?int $round = null;
 
-    #[ORM\Column(length: 255, options: ['default' => 'new'])]
-    private ?string $state = 'new';
+    #[ORM\Column(length: 255, options: ['default' => self::STATE_NEW])]
+    private ?string $state = self::STATE_NEW;
 
     #[ORM\Column(options: ['default' => 0])]
     private ?int $score_wait = 0;

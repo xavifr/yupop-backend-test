@@ -15,6 +15,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\HasLifecycleCallbacks]
 class Game
 {
+    const STATE_NEW = 'new';
+    const STATE_PLAYING = 'playing';
+    const STATE_PLAYERS_FINISHED = 'players_finished';
+    const STATE_FINISHED = 'finished';
+
 
     public const FRAMES_PER_GAME = 10;
 
@@ -34,8 +39,8 @@ class Game
     #[ORM\OrderBy(value: ["position"=>"ASC"])]
     private Collection $players;
 
-    #[ORM\Column(length: 255, options: ['default' => 'new'])]
-    private ?string $state = 'new';
+    #[ORM\Column(length: 255, options: ['default' => self::STATE_NEW])]
+    private ?string $state = self::STATE_NEW;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Player $WinnerPlayer = null;
@@ -119,7 +124,6 @@ class Game
     #[ORM\PrePersist]
     public function setReferenceValue(): void
     {
-        error_log("PREPER");
         $this->reference = bin2hex(random_bytes(16));
     }
 

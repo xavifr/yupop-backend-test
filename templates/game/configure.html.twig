@@ -5,11 +5,11 @@
 {% block body %}
 
     <div class="row mt-3">
-        <div class="card col-6">
+        <div class="card col-8">
             <div class="card-body">
-                <h3 class="card-title">Current players</h3>
-
+                <h3 class="card-title fw-bold">{{ game.name|upper }}</h3>
                 <div class="card-text">
+                    <h5 class="card-title">Current players</h5>
                     <ul class="list-group">
                         {% if game.players|length > 0 %}
                             {% for player in game.players %}
@@ -23,12 +23,18 @@
             </div>
         </div>
 
-        <div class="card col-6">
+        <div class="card col-4">
             <div class="card-body">
-                <h3 class="card-title">Add more players</h3>
+                <h3 class="card-title">Setup game</h3>
 
                 <div class="card-text">
-                    {{ form(game_form) }}
+                    {{ form_start(game_form) }}
+                    {{ form_row(game_form.name, {label: 'New Player Name'}) }}
+                    <div class="btn-group" role="group">
+                    {{ form_widget(game_form.addPlayer, {label: 'Add Player'}) }}
+                    {{ form_widget(game_form.startGame, {label: 'Start Game', attr: {class: 'btn-success'}}) }}
+                    </div>
+                    {{ form_end(game_form) }}
                 </div>
             </div>
         </div>

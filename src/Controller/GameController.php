@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -42,7 +43,7 @@ class GameController extends AbstractController
             $this->entityManager->persist($game);
             $this->entityManager->flush();
 
-            return $this->redirectToRoute('configure', ['reference' => $game->getReference()]);
+            return $this->redirectToRoute('configure_game', ['reference' => $game->getReference()]);
         }
 
         return $this->render('game/create.html.twig', [
@@ -52,12 +53,16 @@ class GameController extends AbstractController
     }
 
 
-    #[Route('/setup/{reference}', name: 'configure')]
+    #[Route('/setup/{reference}', name: 'configure_game')]
     public function configure(
         Request $request,
         Game    $game,
     ): Response
     {
+        if ($game->getState() != Game::STATE_NEW) {
+            return $this->redirectToRoute('game_show', ['reference' => $game->getReference()]);
+        }
+
         $player = new Player();
         $form = $this->createForm(NewPlayerFormType::class, $player);
         $form->handleRequest($request);
@@ -91,6 +96,10 @@ class GameController extends AbstractController
         Game $game,
     ): Response
     {
+        if ($game->getState() == Game::STATE_NEW) {
+            return $this->redirectToRoute('configure_game', ['reference' => $game->getReference()]);
+        }
+
         // find player in playing state
         $players_playing = $game->getPlayers()->filter(function(Player $player) {
             return $player->getState() == 'playing';

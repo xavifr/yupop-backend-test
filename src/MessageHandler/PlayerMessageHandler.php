@@ -11,6 +11,7 @@ use App\Repository\FrameRepository;
 use App\Repository\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\WorkflowInterface;
@@ -40,10 +41,10 @@ class PlayerMessageHandler
         $new_messages = [];
 
         switch ($player->getState()) {
-            case 'waiting':
+            case Player::STATE_WAITING:
                 $this->atWaiting($player);
                 break;
-            case 'playing':
+            case Player::STATE_PLAYING:
                 $new_messages = $this->atPlaying($player, $message->getNextRound());
                 break;
         }
@@ -92,6 +93,10 @@ class PlayerMessageHandler
      */
     private function atPlaying(Player $player, int $next_round): array
     {
+        if ($next_round > Game::FRAMES_PER_GAME) {
+            throw new Exception(sprintf("Cannot create a frame round greater than %d", Game::FRAMES_PER_GAME));
+        }
+
         $out_messages = [];
 
         $this->logger->error(" PLAYER finished his turn");

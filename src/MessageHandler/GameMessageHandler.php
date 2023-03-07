@@ -38,13 +38,13 @@ class GameMessageHandler
         // initialize new messages to deliver
         $new_messages = [];
         switch ($game->getState()) {
-            case 'new':
+            case Game::STATE_NEW:
                 $new_messages = $this->atNew($game);
                 break;
-            case 'playing':
+            case Game::STATE_PLAYING:
                 $new_messages = $this->atPlaying($game);
                 break;
-            case 'players_finished':
+            case Game::STATE_PLAYERS_FINISHED:
                 $this->atPlayersFinished($game);
                 break;
             default:
@@ -88,7 +88,7 @@ class GameMessageHandler
         // Get waiting players
         /** @var Player[] $players */
         $players = $game->getPlayers()->filter(function (Player $player) {
-            return $player->getState() == 'waiting';
+            return $player->getState() == Player::STATE_WAITING;
         })->toArray();
 
         $this->logger->error(sprintf("  found %d players waiting...", count($players)));
@@ -96,10 +96,6 @@ class GameMessageHandler
         if (count($players) > 0) {
             // order players based on last played round and position on game
             usort($players, function (Player $a, Player $b) {
-                $this->logger->error(sprintf("  cmp %s with %s", $a->getName(), $b->getName()));
-                $this->logger->error(sprintf("    A GLT: %d, POS: %d", $a->getLastRound(), $a->getPosition()));
-                $this->logger->error(sprintf("    B GLT: %d, POS: %d", $b->getLastRound(), $b->getPosition()));
-
                 if ($a->getLastRound() == $b->getLastRound()) {
                     return $a->getPosition() - $b->getPosition();
                 }
