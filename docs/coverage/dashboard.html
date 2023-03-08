@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /home/xavier/Private/code/yupop-backend-test-main/src</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="_css/bootstrap.min.css?v=9.2.25" rel="stylesheet" type="text/css">
+  <link href="_css/nv.d3.min.css?v=9.2.25" rel="stylesheet" type="text/css">
+  <link href="_css/style.css?v=9.2.25" rel="stylesheet" type="text/css">
+  <link href="_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="index.html">/home/xavier/Private/code/yupop-backend-test-main/src</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="DataFixtures/Game1Fixture.php.html#9">App\DataFixtures\Game1Fixture</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DataFixtures/Game2Fixture.php.html#10">App\DataFixtures\Game2Fixture</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DataFixtures/Game3Fixture.php.html#11">App\DataFixtures\Game3Fixture</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DataFixtures/Game4Fixture.php.html#10">App\DataFixtures\Game4Fixture</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Repository/PlayerRepository.php.html#17">App\Repository\PlayerRepository</a></td><td class="text-right">14%</td></tr>
+       <tr><td><a href="Repository/FrameRepository.php.html#18">App\Repository\FrameRepository</a></td><td class="text-right">25%</td></tr>
+       <tr><td><a href="Repository/GameRepository.php.html#17">App\Repository\GameRepository</a></td><td class="text-right">42%</td></tr>
+       <tr><td><a href="Entity/Game.php.html#12">App\Entity\Game</a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="Entity/Player.php.html#11">App\Entity\Player</a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="MessageHandler/FrameRollPropagationHandler.php.html#15">App\MessageHandler\FrameRollPropagationHandler</a></td><td class="text-right">80%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Entity/Player.php.html#11">App\Entity\Player</a></td><td class="text-right">24</td></tr>
+       <tr><td><a href="Entity/Game.php.html#12">App\Entity\Game</a></td><td class="text-right">21</td></tr>
+       <tr><td><a href="Repository/FrameRepository.php.html#18">App\Repository\FrameRepository</a></td><td class="text-right">21</td></tr>
+       <tr><td><a href="Repository/PlayerRepository.php.html#17">App\Repository\PlayerRepository</a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Repository/GameRepository.php.html#17">App\Repository\GameRepository</a></td><td class="text-right">9</td></tr>
+       <tr><td><a href="MessageHandler/FrameRollPropagationHandler.php.html#15">App\MessageHandler\FrameRollPropagationHandler</a></td><td class="text-right">8</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="DataFixtures/Game1Fixture.php.html#11"><abbr title="App\DataFixtures\Game1Fixture::load">load</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DataFixtures/Game2Fixture.php.html#12"><abbr title="App\DataFixtures\Game2Fixture::load">load</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DataFixtures/Game3Fixture.php.html#13"><abbr title="App\DataFixtures\Game3Fixture::load">load</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DataFixtures/Game4Fixture.php.html#12"><abbr title="App\DataFixtures\Game4Fixture::load">load</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Entity/Game.php.html#74"><abbr title="App\Entity\Game::setReference">setReference</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Entity/Game.php.html#99"><abbr title="App\Entity\Game::removePlayer">removePlayer</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Entity/Player.php.html#103"><abbr title="App\Entity\Player::setPosition">setPosition</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Entity/Player.php.html#128"><abbr title="App\Entity\Player::removeFrame">removeFrame</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Repository/FrameRepository.php.html#25"><abbr title="App\Repository\FrameRepository::save">save</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Repository/FrameRepository.php.html#34"><abbr title="App\Repository\FrameRepository::remove">remove</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Repository/GameRepository.php.html#33"><abbr title="App\Repository\GameRepository::remove">remove</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Repository/PlayerRepository.php.html#24"><abbr title="App\Repository\PlayerRepository::save">save</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Repository/PlayerRepository.php.html#33"><abbr title="App\Repository\PlayerRepository::remove">remove</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Repository/GameRepository.php.html#24"><abbr title="App\Repository\GameRepository::save">save</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="MessageHandler/FrameRollPropagationHandler.php.html#32"><abbr title="App\MessageHandler\FrameRollPropagationHandler::__invoke">__invoke</abbr></a></td><td class="text-right">78%</td></tr>
+       <tr><td><a href="MessageHandler/FrameMessageHandler.php.html#196"><abbr title="App\MessageHandler\FrameMessageHandler::atWaitScore">atWaitScore</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="MessageHandler/FrameMessageHandler.php.html#165"><abbr title="App\MessageHandler\FrameMessageHandler::atThirdRoll">atThirdRoll</abbr></a></td><td class="text-right">87%</td></tr>
+       <tr><td><a href="MessageHandler/FrameMessageHandler.php.html#30"><abbr title="App\MessageHandler\FrameMessageHandler::__invoke">__invoke</abbr></a></td><td class="text-right">88%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Entity/Game.php.html#99"><abbr title="App\Entity\Game::removePlayer">removePlayer</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Entity/Player.php.html#128"><abbr title="App\Entity\Player::removeFrame">removeFrame</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="MessageHandler/FrameRollPropagationHandler.php.html#32"><abbr title="App\MessageHandler\FrameRollPropagationHandler::__invoke">__invoke</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="MessageHandler/FrameMessageHandler.php.html#30"><abbr title="App\MessageHandler\FrameMessageHandler::__invoke">__invoke</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="Repository/FrameRepository.php.html#25"><abbr title="App\Repository\FrameRepository::save">save</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Repository/FrameRepository.php.html#34"><abbr title="App\Repository\FrameRepository::remove">remove</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Repository/GameRepository.php.html#33"><abbr title="App\Repository\GameRepository::remove">remove</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Repository/PlayerRepository.php.html#24"><abbr title="App\Repository\PlayerRepository::save">save</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Repository/PlayerRepository.php.html#33"><abbr title="App\Repository\PlayerRepository::remove">remove</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="MessageHandler/FrameMessageHandler.php.html#196"><abbr title="App\MessageHandler\FrameMessageHandler::atWaitScore">atWaitScore</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Repository/GameRepository.php.html#24"><abbr title="App\Repository\GameRepository::save">save</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="MessageHandler/FrameMessageHandler.php.html#165"><abbr title="App\MessageHandler\FrameMessageHandler::atThirdRoll">atThirdRoll</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 9.2.25</a> using <a href="https://secure.php.net/" target="_top">PHP 8.1.7-1ubuntu3.3</a> and <a href="https://phpunit.de/">PHPUnit 9.6.4</a> at Wed Mar 8 7:20:58 UTC 2023.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="_js/jquery.min.js?v=9.2.25" type="text/javascript"></script>
+  <script src="_js/d3.min.js?v=9.2.25" type="text/javascript"></script>
+  <script src="_js/nv.d3.min.js?v=9.2.25" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([4,0,1,1,0,1,0,0,1,2,3,10], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([13,0,0,0,0,0,0,1,1,3,4,79], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[96.42857142857143,18,"<a href=\"Controller\/GameController.php.html#21\">App\\Controller\\GameController<\/a>"],[0,1,"<a href=\"DataFixtures\/Game1Fixture.php.html#9\">App\\DataFixtures\\Game1Fixture<\/a>"],[0,1,"<a href=\"DataFixtures\/Game2Fixture.php.html#10\">App\\DataFixtures\\Game2Fixture<\/a>"],[0,1,"<a href=\"DataFixtures\/Game3Fixture.php.html#11\">App\\DataFixtures\\Game3Fixture<\/a>"],[0,1,"<a href=\"DataFixtures\/Game4Fixture.php.html#10\">App\\DataFixtures\\Game4Fixture<\/a>"],[100,17,"<a href=\"Entity\/Frame.php.html#8\">App\\Entity\\Frame<\/a>"],[75,17,"<a href=\"Entity\/Game.php.html#12\">App\\Entity\\Game<\/a>"],[80,21,"<a href=\"Entity\/Player.php.html#11\">App\\Entity\\Player<\/a>"],[100,2,"<a href=\"Form\/FrameRollFormType.php.html#12\">App\\Form\\FrameRollFormType<\/a>"],[100,3,"<a href=\"Form\/NewGameFormType.php.html#13\">App\\Form\\NewGameFormType<\/a>"],[100,2,"<a href=\"Form\/NewPlayerFormType.php.html#12\">App\\Form\\NewPlayerFormType<\/a>"],[100,0,"<a href=\"Kernel.php.html#8\">App\\Kernel<\/a>"],[100,3,"<a href=\"Message\/FrameMessage.php.html#5\">App\\Message\\FrameMessage<\/a>"],[100,3,"<a href=\"Message\/FrameRollPropagationMessage.php.html#5\">App\\Message\\FrameRollPropagationMessage<\/a>"],[100,2,"<a href=\"Message\/GameMessage.php.html#5\">App\\Message\\GameMessage<\/a>"],[100,2,"<a href=\"Message\/PlayerMessage.php.html#5\">App\\Message\\PlayerMessage<\/a>"],[90,22,"<a href=\"MessageHandler\/FrameMessageHandler.php.html#18\">App\\MessageHandler\\FrameMessageHandler<\/a>"],[80,8,"<a href=\"MessageHandler\/FrameRollPropagationHandler.php.html#15\">App\\MessageHandler\\FrameRollPropagationHandler<\/a>"],[100,14,"<a href=\"MessageHandler\/GameMessageHandler.php.html#15\">App\\MessageHandler\\GameMessageHandler<\/a>"],[97.2972972972973,10,"<a href=\"MessageHandler\/PlayerMessageHandler.php.html#18\">App\\MessageHandler\\PlayerMessageHandler<\/a>"],[25,6,"<a href=\"Repository\/FrameRepository.php.html#18\">App\\Repository\\FrameRepository<\/a>"],[42.857142857142854,5,"<a href=\"Repository\/GameRepository.php.html#17\">App\\Repository\\GameRepository<\/a>"],[14.285714285714285,5,"<a href=\"Repository\/PlayerRepository.php.html#17\">App\\Repository\\PlayerRepository<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[100,1,"<a href=\"Controller\/GameController.php.html#24\">App\\Controller\\GameController::__construct<\/a>"],[100,3,"<a href=\"Controller\/GameController.php.html#31\">App\\Controller\\GameController::create<\/a>"],[100,7,"<a href=\"Controller\/GameController.php.html#54\">App\\Controller\\GameController::configure<\/a>"],[90.47619047619048,7,"<a href=\"Controller\/GameController.php.html#95\">App\\Controller\\GameController::show<\/a>"],[0,1,"<a href=\"DataFixtures\/Game1Fixture.php.html#11\">App\\DataFixtures\\Game1Fixture::load<\/a>"],[0,1,"<a href=\"DataFixtures\/Game2Fixture.php.html#12\">App\\DataFixtures\\Game2Fixture::load<\/a>"],[0,1,"<a href=\"DataFixtures\/Game3Fixture.php.html#13\">App\\DataFixtures\\Game3Fixture::load<\/a>"],[0,1,"<a href=\"DataFixtures\/Game4Fixture.php.html#12\">App\\DataFixtures\\Game4Fixture::load<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#54\">App\\Entity\\Frame::getId<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#59\">App\\Entity\\Frame::getRound<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#64\">App\\Entity\\Frame::setRound<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#71\">App\\Entity\\Frame::getState<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#76\">App\\Entity\\Frame::setState<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#83\">App\\Entity\\Frame::getScoreWait<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#88\">App\\Entity\\Frame::setScoreWait<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#95\">App\\Entity\\Frame::getRoll1<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#100\">App\\Entity\\Frame::setRoll1<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#108\">App\\Entity\\Frame::getRoll2<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#113\">App\\Entity\\Frame::setRoll2<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#122\">App\\Entity\\Frame::getScore<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#127\">App\\Entity\\Frame::setScore<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#134\">App\\Entity\\Frame::getPlayer<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#139\">App\\Entity\\Frame::setPlayer<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#146\">App\\Entity\\Frame::getRoll3<\/a>"],[100,1,"<a href=\"Entity\/Frame.php.html#151\">App\\Entity\\Frame::setRoll3<\/a>"],[100,1,"<a href=\"Entity\/Game.php.html#47\">App\\Entity\\Game::__construct<\/a>"],[100,1,"<a href=\"Entity\/Game.php.html#52\">App\\Entity\\Game::getId<\/a>"],[100,1,"<a href=\"Entity\/Game.php.html#57\">App\\Entity\\Game::getName<\/a>"],[100,1,"<a href=\"Entity\/Game.php.html#62\">App\\Entity\\Game::setName<\/a>"],[100,1,"<a href=\"Entity\/Game.php.html#69\">App\\Entity\\Game::getReference<\/a>"],[0,1,"<a href=\"Entity\/Game.php.html#74\">App\\Entity\\Game::setReference<\/a>"],[100,1,"<a href=\"Entity\/Game.php.html#84\">App\\Entity\\Game::getPlayers<\/a>"],[100,2,"<a href=\"Entity\/Game.php.html#89\">App\\Entity\\Game::addPlayer<\/a>"],[0,3,"<a href=\"Entity\/Game.php.html#99\">App\\Entity\\Game::removePlayer<\/a>"],[100,1,"<a href=\"Entity\/Game.php.html#111\">App\\Entity\\Game::getState<\/a>"],[100,1,"<a href=\"Entity\/Game.php.html#116\">App\\Entity\\Game::setState<\/a>"],[100,1,"<a href=\"Entity\/Game.php.html#123\">App\\Entity\\Game::setReferenceValue<\/a>"],[100,1,"<a href=\"Entity\/Game.php.html#129\">App\\Entity\\Game::getWinnerPlayer<\/a>"],[100,1,"<a href=\"Entity\/Game.php.html#134\">App\\Entity\\Game::setWinnerPlayer<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#52\">App\\Entity\\Player::__construct<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#57\">App\\Entity\\Player::getId<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#62\">App\\Entity\\Player::getName<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#67\">App\\Entity\\Player::setName<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#74\">App\\Entity\\Player::getState<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#79\">App\\Entity\\Player::setState<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#86\">App\\Entity\\Player::getFinalScore<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#91\">App\\Entity\\Player::setFinalScore<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#98\">App\\Entity\\Player::getPosition<\/a>"],[0,1,"<a href=\"Entity\/Player.php.html#103\">App\\Entity\\Player::setPosition<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#113\">App\\Entity\\Player::getFrames<\/a>"],[100,2,"<a href=\"Entity\/Player.php.html#118\">App\\Entity\\Player::addFrame<\/a>"],[0,3,"<a href=\"Entity\/Player.php.html#128\">App\\Entity\\Player::removeFrame<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#140\">App\\Entity\\Player::setPositionValue<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#146\">App\\Entity\\Player::getGame<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#151\">App\\Entity\\Player::setGame<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#158\">App\\Entity\\Player::getLastRound<\/a>"],[100,1,"<a href=\"Entity\/Player.php.html#163\">App\\Entity\\Player::setLastRound<\/a>"],[100,1,"<a href=\"Form\/FrameRollFormType.php.html#14\">App\\Form\\FrameRollFormType::buildForm<\/a>"],[100,1,"<a href=\"Form\/FrameRollFormType.php.html#21\">App\\Form\\FrameRollFormType::configureOptions<\/a>"],[100,1,"<a href=\"Form\/NewGameFormType.php.html#15\">App\\Form\\NewGameFormType::__construct<\/a>"],[100,1,"<a href=\"Form\/NewGameFormType.php.html#21\">App\\Form\\NewGameFormType::buildForm<\/a>"],[100,1,"<a href=\"Form\/NewGameFormType.php.html#28\">App\\Form\\NewGameFormType::configureOptions<\/a>"],[100,1,"<a href=\"Form\/NewPlayerFormType.php.html#14\">App\\Form\\NewPlayerFormType::buildForm<\/a>"],[100,1,"<a href=\"Form\/NewPlayerFormType.php.html#22\">App\\Form\\NewPlayerFormType::configureOptions<\/a>"],[100,1,"<a href=\"Message\/FrameMessage.php.html#7\">App\\Message\\FrameMessage::__construct<\/a>"],[100,1,"<a href=\"Message\/FrameMessage.php.html#14\">App\\Message\\FrameMessage::getId<\/a>"],[100,1,"<a href=\"Message\/FrameMessage.php.html#19\">App\\Message\\FrameMessage::getPinsRolled<\/a>"],[100,1,"<a href=\"Message\/FrameRollPropagationMessage.php.html#7\">App\\Message\\FrameRollPropagationMessage::__construct<\/a>"],[100,1,"<a href=\"Message\/FrameRollPropagationMessage.php.html#14\">App\\Message\\FrameRollPropagationMessage::getId<\/a>"],[100,1,"<a href=\"Message\/FrameRollPropagationMessage.php.html#19\">App\\Message\\FrameRollPropagationMessage::getPinsRolled<\/a>"],[100,1,"<a href=\"Message\/GameMessage.php.html#7\">App\\Message\\GameMessage::__construct<\/a>"],[100,1,"<a href=\"Message\/GameMessage.php.html#13\">App\\Message\\GameMessage::getId<\/a>"],[100,1,"<a href=\"Message\/PlayerMessage.php.html#8\">App\\Message\\PlayerMessage::__construct<\/a>"],[100,1,"<a href=\"Message\/PlayerMessage.php.html#14\">App\\Message\\PlayerMessage::getId<\/a>"],[100,1,"<a href=\"MessageHandler\/FrameMessageHandler.php.html#21\">App\\MessageHandler\\FrameMessageHandler::__construct<\/a>"],[88.88888888888889,7,"<a href=\"MessageHandler\/FrameMessageHandler.php.html#30\">App\\MessageHandler\\FrameMessageHandler::__invoke<\/a>"],[92.3076923076923,4,"<a href=\"MessageHandler\/FrameMessageHandler.php.html#75\">App\\MessageHandler\\FrameMessageHandler::atNew<\/a>"],[92.85714285714286,5,"<a href=\"MessageHandler\/FrameMessageHandler.php.html#118\">App\\MessageHandler\\FrameMessageHandler::atSecondRoll<\/a>"],[87.5,2,"<a href=\"MessageHandler\/FrameMessageHandler.php.html#165\">App\\MessageHandler\\FrameMessageHandler::atThirdRoll<\/a>"],[83.33333333333334,3,"<a href=\"MessageHandler\/FrameMessageHandler.php.html#196\">App\\MessageHandler\\FrameMessageHandler::atWaitScore<\/a>"],[100,1,"<a href=\"MessageHandler\/FrameRollPropagationHandler.php.html#18\">App\\MessageHandler\\FrameRollPropagationHandler::__construct<\/a>"],[78.57142857142857,7,"<a href=\"MessageHandler\/FrameRollPropagationHandler.php.html#32\">App\\MessageHandler\\FrameRollPropagationHandler::__invoke<\/a>"],[100,1,"<a href=\"MessageHandler\/GameMessageHandler.php.html#18\">App\\MessageHandler\\GameMessageHandler::__construct<\/a>"],[100,5,"<a href=\"MessageHandler\/GameMessageHandler.php.html#27\">App\\MessageHandler\\GameMessageHandler::__invoke<\/a>"],[100,1,"<a href=\"MessageHandler\/GameMessageHandler.php.html#61\">App\\MessageHandler\\GameMessageHandler::atNew<\/a>"],[100,3,"<a href=\"MessageHandler\/GameMessageHandler.php.html#76\">App\\MessageHandler\\GameMessageHandler::atPlaying<\/a>"],[100,4,"<a href=\"MessageHandler\/GameMessageHandler.php.html#114\">App\\MessageHandler\\GameMessageHandler::atPlayersFinished<\/a>"],[100,1,"<a href=\"MessageHandler\/PlayerMessageHandler.php.html#21\">App\\MessageHandler\\PlayerMessageHandler::__construct<\/a>"],[91.66666666666666,4,"<a href=\"MessageHandler\/PlayerMessageHandler.php.html#31\">App\\MessageHandler\\PlayerMessageHandler::__invoke<\/a>"],[100,2,"<a href=\"MessageHandler\/PlayerMessageHandler.php.html#67\">App\\MessageHandler\\PlayerMessageHandler::atWaiting<\/a>"],[100,3,"<a href=\"MessageHandler\/PlayerMessageHandler.php.html#89\">App\\MessageHandler\\PlayerMessageHandler::atPlaying<\/a>"],[100,1,"<a href=\"Repository\/FrameRepository.php.html#20\">App\\Repository\\FrameRepository::__construct<\/a>"],[0,2,"<a href=\"Repository\/FrameRepository.php.html#25\">App\\Repository\\FrameRepository::save<\/a>"],[0,2,"<a href=\"Repository\/FrameRepository.php.html#34\">App\\Repository\\FrameRepository::remove<\/a>"],[100,1,"<a href=\"Repository\/FrameRepository.php.html#43\">App\\Repository\\FrameRepository::findLastFrameForPlayer<\/a>"],[100,1,"<a href=\"Repository\/GameRepository.php.html#19\">App\\Repository\\GameRepository::__construct<\/a>"],[66.66666666666666,2,"<a href=\"Repository\/GameRepository.php.html#24\">App\\Repository\\GameRepository::save<\/a>"],[0,2,"<a href=\"Repository\/GameRepository.php.html#33\">App\\Repository\\GameRepository::remove<\/a>"],[100,1,"<a href=\"Repository\/PlayerRepository.php.html#19\">App\\Repository\\PlayerRepository::__construct<\/a>"],[0,2,"<a href=\"Repository\/PlayerRepository.php.html#24\">App\\Repository\\PlayerRepository::save<\/a>"],[0,2,"<a href=\"Repository\/PlayerRepository.php.html#33\">App\\Repository\\PlayerRepository::remove<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>
