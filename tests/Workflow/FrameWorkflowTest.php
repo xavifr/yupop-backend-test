@@ -154,8 +154,8 @@ class FrameWorkflowTest extends KernelTestCase
         $this->assertEquals(2, $frame->getRoll1());
         $this->assertEquals(Frame::PINS_PER_FRAME - 2, $frame->getRoll2());
         $this->assertEquals(5, $frame->getRoll3());
-        $this->assertEquals(Frame::PINS_PER_FRAME + 5, $frame->getScore());
-        $this->assertEquals(Frame::PINS_PER_FRAME + 5, $player->getFinalScore());
+        $this->assertEquals(Frame::PINS_PER_FRAME + 5 + 5, $frame->getScore());
+        $this->assertEquals(Frame::PINS_PER_FRAME + 5 + 5, $player->getFinalScore());
     }
 
     public function testScoreWait(): void

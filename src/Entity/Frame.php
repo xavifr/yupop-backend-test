@@ -153,6 +153,9 @@ class Frame
         $this->roll_3 = $roll_3;
         $this->score += $roll_3;
 
+        // third roll also propagates its score to frame's first roll
+        $this->score += $roll_3;
+
         return $this;
     }
 }

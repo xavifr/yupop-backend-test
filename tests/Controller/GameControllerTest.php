@@ -17,7 +17,7 @@ class GameControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h3', 'New game!');
+        $this->assertSelectorTextContains('h2', 'Yupop Bowling');
     }
 
     public function testPostCreate(): void
