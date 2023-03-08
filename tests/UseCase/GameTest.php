@@ -31,15 +31,21 @@ class GameTest extends KernelTestCase
 
     public function testFastOnePlayerGame(): void
     {
+        // get game from db (game with 1 player not started)
         $game = $this->gameRepository->findOneByReference("random_reference_2");
         $this->assertEquals(Game::STATE_NEW, $game->getState());
 
+        // generate a game message (NEW => PLAYING)
         ($this->gameMessageHandler)(new GameMessage($game->getId()));
+
+        // game is playing
         $this->assertEquals(Game::STATE_PLAYING, $game->getState());
 
+        // player is playing
         $player = $game->getPlayers()->first();
         $this->assertEquals(Player::STATE_PLAYING, $player->getState());
 
+        // throw 1 pin per throw in all frames
         for ($i = 1; $i <= Game::FRAMES_PER_GAME; $i++) {
             /** @var Frame $frame */
             $frame = $player->getFrames()->filter(function (Frame $f) {
@@ -64,13 +70,18 @@ class GameTest extends KernelTestCase
 
     public function testFastTwoPlayersGame(): void
     {
+        // get new game with two players
         $game = $this->gameRepository->findOneByReference("random_reference_4");
 
+        // generate a game message (NEW => PLAYING)
         ($this->gameMessageHandler)(new GameMessage($game->getId()));
+
+        // game is playing
         $this->assertEquals(Game::STATE_PLAYING, $game->getState());
 
         $players = $game->getPlayers();
 
+        // throw 1 pin per roll for player1 and 2 pins for player2
         for ($i = 1; $i <= Game::FRAMES_PER_GAME; $i++) {
             foreach ($players as $j => $player) {
                 /** @var Frame $frame */
